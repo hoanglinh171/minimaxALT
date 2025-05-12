@@ -8,7 +8,7 @@ library(devtools)
 
 use_git()
 
-1Rcpp::compileAttributes()
+Rcpp::compileAttributes()
 # devtools::clean_dll()
 devtools::load_all()
 
