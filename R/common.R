@@ -1,7 +1,3 @@
-library(ggplot2)
-library(parallel)
-
-
 get_outbound_sigmoid <- function(coef_vec, coef_lower, coef_upper) {
   stopifnot(is.vector(coef_vec),
             all(is.finite(coef_vec)),

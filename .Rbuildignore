@@ -1,4 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^.RData$
+^.Rhistory$
+^.o$
 ^\.vscode$
 ^LICENSE\.md$
+^README\.md$
+^test\.R$
