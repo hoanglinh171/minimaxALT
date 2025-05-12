@@ -43,10 +43,11 @@ find_optimal_alt <- function(design_type, distribution,
   use_cond = c(design_info$use_cond)
   stopifnot(design_info$n_factor == length(use_cond))
   
-  if (n_threads > 0.8 * detectCores()) {
-    cat("Number of threads available is", detectCores(), ".\n")
-    cat("It is recommended to run with ", round(0.8 * detectCores(), digits = 0), "threads at most.\n")
-    n_threads = round(0.8 * detectCores(), digits = 0)
+  max_cores = parallel::detectCores()
+  if (n_threads > 0.8 * max_cores) {
+    cat("Number of threads available is", max_cores, ".\n")
+    cat("It is recommended to run with ", round(0.8 * max_cores, digits = 0), "threads at most.\n")
+    n_threads = round(0.8 * max_cores, digits = 0)
   }
   
   

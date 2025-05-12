@@ -2,3 +2,7 @@
 
 S3method(plot,OptimalALT)
 S3method(summary,OptimalALT)
+importFrom(graphics,contour)
+importFrom(graphics,rect)
+importFrom(graphics,text)
+importFrom(stats,runif)
