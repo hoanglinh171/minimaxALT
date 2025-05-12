@@ -4,7 +4,11 @@ library(RcppGSL)
 library(ggplot2)
 library(parallel)
 
-Rcpp::compileAttributes()
+library(devtools)
+
+use_git()
+
+1Rcpp::compileAttributes()
 # devtools::clean_dll()
 devtools::load_all()
 
