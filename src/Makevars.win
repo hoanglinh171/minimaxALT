@@ -1,0 +1,27 @@
+## This assumes that the LIB_GSL variable points to working GSL libraries
+## CXX_STD = CXX11
+PKG_CPPFLAGS = -I$(LIB_GSL)/include -I. -I../inst/include
+PKG_CXXFLAGS = -O3 -march=native -mtune=native
+# PKG_CXXFLAGS = -g3 -O0 -fvisibility=default
+# PKG_CPPFLAGS += -g -O0
+
+PKG_LIBS = -L$(LIB_GSL)/lib -lgsl -lgslcblas
+PKG_LIBS += $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) 
+
+PKG_CXXFLAGS += -fopenmp
+PKG_LIBS += -fopenmp
+
+
+# For both Unix and Windows:
+# PKG_CPPFLAGS = -g -O0  # -g enables debug symbols, -O0 disables optimizations
+# PKG_CXXFLAGS = -g -O0
+# CXXFLAGS = -g -O0
+
+# In src/Makevars.win
+# PKG_CPPFLAGS = -g -O0
+# PKG_CXXFLAGS = -g -O0
+
+
+# PKG_CPPFLAGS = -I$(LIB_GSL)/include -I. -I../inst/include -g -O0
+# PKG_CXXFLAGS = -g -O0 -fopenmp
+# PKG_LIBS = -L$(LIB_GSL)/lib -lgsl -lgslcblas $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -lgomp
