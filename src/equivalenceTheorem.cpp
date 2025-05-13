@@ -242,8 +242,6 @@ void equivalence_plot_data(const arma::vec &opt_alloc,
 
     PutRNGstate();
 
-        // model_weigth.t().print("Optimal weigth: ");
-        // std::cout << "Max derivative: " << max_dd_i << std::endl;
     }
 
     pso_result_str.model_weight = optimal_weigth;

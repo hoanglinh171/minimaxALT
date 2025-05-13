@@ -32,7 +32,7 @@ arma::vec softmax (arma::vec pi_arr) {
 
 arma::mat x_matrix(const arma::vec& alloc, int n_support, int n_factor, int n_unit) {
     if ((double)(alloc.n_elem + 1) / (double)n_support != (n_factor + 1)) {
-        std::cout << "Number of supports and given allocation do not match." << std::endl;
+        Rcpp::Rcout << "Number of supports and given allocation do not match." << std::endl;
         return arma::mat(1, 1, arma::fill::zeros);
     }
 
@@ -284,7 +284,6 @@ arma::mat fisher_info(const arma::mat& X,
 double is_singular(const arma::mat& matrix) {
     double cond_num = arma::rcond(matrix);
     if (cond_num <= constants::COND_NUM_LIM) {
-        // std::cout << cond_num << std::endl;
         return true;
     }
     return false;
@@ -455,7 +454,7 @@ int check_degenerate(arma::vec& p_coef,
             for (arma::uword i = 0; i < design_info.use_cond.n_elem; i++) {
                 for (arma::uword j = i+1; j < design_info.use_cond.n_elem; j++) {
                     if (design_info.use_cond(i) != design_info.use_cond(j)) {
-                        std::cout << "Degenerate design requires equal x's" << std::endl;
+                        Rcpp::Rcout << "Degenerate design requires equal x's" << std::endl;
                         break;
                         return -1;
                     }
@@ -545,7 +544,7 @@ double obj_func(const arma::vec& alloc,
             double det_fisher = arma::det(fisher_info_mat);
             return 1 / det_fisher;
         } else {
-            std::cout << "Optimality type should be C or D." << std::endl;
+            Rcpp::Rcout << "Optimality type should be C or D." << std::endl;
             return constants::BIG;
         }
     }

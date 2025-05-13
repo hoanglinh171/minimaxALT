@@ -100,7 +100,7 @@ double max_coef_asr(inner_optimization &inner_param,
                                              glob_alloc, design_info_glob, design_info_local, inner_param.model);
 
     } else {
-        std::cout << "Model must be 1 (weibull), 2 (log normal), or 3 (model robust)." << std::endl;
+        Rcpp::Rcout << "Model must be 1 (weibull), 2 (log normal), or 3 (model robust)." << std::endl;
         return constants::BIG;
     }
 

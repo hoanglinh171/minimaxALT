@@ -9,14 +9,17 @@ Authors@R: person("Hoai-Linh", "Hoang", email = "hoailinh.hoang17@gmail.com",
 Description: A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT) with multiple factors. Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles.
 Imports: 
     Rcpp (>= 1.0.13),
-    RcppArmadillo (>= 14.0.0.1),
-    RcppGSL (>= 0.3.13),
     ggplot2 (>= 3.0.0),
     parallel (>= 4.0.0),
     stats,
     graphics
 Depends: R (>= 4.0.0)
-LinkingTo: Rcpp, RcppArmadillo, RcppGSL
+LinkingTo: Rcpp (>= 1.0.13),
+    RcppArmadillo (>= 14.0.0.1),
+    RcppGSL (>= 0.3.13)
 RoxygenNote: 7.3.2
 URL: https://github.com/hoanglinh171/minimaxALT
 BugReports: https://github.com/hoanglinh171/minimaxALT/issues
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

@@ -1,36 +1,13 @@
 
 ## We want C++11
-## CXX_STD = CXX11
 
 ## Header files from our package, RcppGSL comes in via LinkingTo: in DESCRIPTIPM
 PKG_CPPFLAGS = -I. -I../inst/include
-#PKG_CPPFLAGS += -g3 -O0
 
 
 ## If we want LTO (for testing or optimization)
-PKG_CXXFLAGS = -flto
-PKG_CXXFLAGS = -O3 -march=native -mtune=native
-# PKG_CXXFLAGS = -g3 -O0
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
+# PKG_CXXFLAGS = -O3 -fopenmp
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `$(R_HOME)/bin/Rscript -e "RcppGSL:::LdFlags()"`
 
-## Use the R_HOME indirection to support installations of multiple R version
-## And RcppGSL can tell us where GSL is installed so we get the libraries for linking
-PKG_LIBS = `$(R_HOME)/bin/Rscript -e "RcppGSL:::LdFlags()"`
-PKG_LIBS += $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
 
-PKG_CXXFLAGS += -fopenmp
-PKG_LIBS += -fopenmp
-
-# For both Unix and Windows:
-# PKG_CPPFLAGS = -g -O0  # -g enables debug symbols, -O0 disables optimizations
-# PKG_CXXFLAGS = -g -O0
-# CXXFLAGS = -g -O0
-
-# In src/Makevars.win
-# PKG_CPPFLAGS = -g -O0
-# PKG_CXXFLAGS = -g -O0
-
-# GSL Configuration
-# LIB_GSL = /path/to/your/gsl  # Set this to your actual GSL path
-# PKG_CPPFLAGS = -I$(LIB_GSL)/include -I. -I../inst/include -g -O0
-# PKG_CXXFLAGS = -g -O0 -fopenmp
-# PKG_LIBS = -L$(LIB_GSL)/lib -lgsl -lgslcblas $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) -lgomp

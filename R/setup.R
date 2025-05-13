@@ -1,5 +1,4 @@
-## Design info -----------------------------------------------------------------
-
+#' @export
 set_design_info <- function(k_levels, j_factor, n_unit, censor_time, 
                             p, use_cond, sigma, 
                             x_l = 0, x_h = 1,
@@ -25,7 +24,7 @@ set_design_info <- function(k_levels, j_factor, n_unit, censor_time,
 }
 
 
-## PSO hyperparameters ---------------------------------------------------------
+#' @export
 pso_setting <- function(n_swarm = 32, max_iter = 100,
                         early_stopping = 10, tol = 0.01, c1 = 2.05, c2 = 2.05,
                         w0 = 1.2, w1 = 0.2, w_var = 0.8, vk = 4) {
@@ -37,7 +36,7 @@ pso_setting <- function(n_swarm = 32, max_iter = 100,
 }
 
 
-## Innitialize values -----------------------------------------------------------
+#' @export
 initialize_values <- function(init_swarm = NULL,
                               init_local = NULL, init_coef_mat = NULL) {
   list(

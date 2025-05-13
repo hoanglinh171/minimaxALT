@@ -1,4 +1,4 @@
-## Check equivalence theorem ----------------------------------------------------
+#' @export
 check_equivalence_theorem <- function(best_particle, model_set, design_info) {
   
   stopifnot(design_info$opt_type == "C" || design_info$opt_type == "D")

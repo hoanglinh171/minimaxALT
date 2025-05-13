@@ -22,13 +22,13 @@ Rcpp::List minimax_alt(int design_type, Rcpp::List &pso_info,
     int n_multi_start = init_coef_mat.n_cols;
 
     if (verbose) {
-        std::cout << "Calling Cpp PSO Kernel... " << std::endl;
+        Rcpp::Rcout << "Calling Cpp PSO Kernel... " << std::endl;
     }
 
     pso_main(design_type, pso_opts, inner_param, design_info_local, design_info_glob, pso_result_str, n_multi_start, init_coef_mat, verbose);
 
     if (verbose) {
-        std::cout << "Done." << std::endl;
+        Rcpp::Rcout << "Done." << std::endl;
     }
 
     arma::cube g_hist(pso_result_str.g_hist.n_cols, pso_result_str.g_hist.n_rows, pso_result_str.g_hist.n_slices);

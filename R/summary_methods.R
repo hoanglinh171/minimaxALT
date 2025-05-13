@@ -29,29 +29,35 @@ summary.OptimalALT <- function(object, ...) {
 
 
 #' @export
-plot.OptimalALT <- function(object, x_l, x_h, nlevels = 10) {
-  stopifnot(inherits(object, "OptimalALT"))
+plot.OptimalALT <- function(x, ...) {
+  stopifnot(inherits(x, "OptimalALT"))
   
-  n_factor <- length(object$coef_best) - 1
-  n_support <- (length(object$g_best) + 1) / (n_factor + 1)
+  n_factor <- length(x$coef_best) - 1
+  n_support <- (length(x$g_best) + 1) / (n_factor + 1)
   
-  stress_levels <- matrix(object$g_best[1:(n_support*n_factor)], 
+  stress_levels <- matrix(x$g_best[1:(n_support*n_factor)], 
                           ncol = n_support, byrow=TRUE)
   
-  prop <- get_proportion(object$g_best[(n_support*n_factor + 1):length(object$g_best)])
+  prop <- get_proportion(x$g_best[(n_support*n_factor + 1):length(x$g_best)])
+  
+  args <- list(...)
+  x_l <- ifelse(is.null(args$x_l), 0, args$x_l)
+  x_h <- ifelse(is.null(args$x_h), 1, args$x_h)
+  nlevels <- ifelse(is.null(args$nlevels), 10, args$nlevels)
+
   
   if (n_factor == 1) {
-    plot_one_factor(object$equivalence_data, proportion = prop, x_l=x_l, x_h=x_h)
+    plot_one_factor(x$equivalence_data, proportion = prop, x_l=x_l, x_h=x_h)
     
   } else if (n_factor == 2) {
-    plot_two_factor(object$equivalence_data, proportion = prop, x_l=x_l, x_h=x_h,
+    plot_two_factor(x$equivalence_data, proportion = prop, x_l=x_l, x_h=x_h,
                     nlevels = nlevels)
     
   } else {
     stop("Do not support plotting for ALT with more than 2 factors.")
   }
   
-  invisible(object)
+  invisible(x)
 }
 
 
@@ -64,15 +70,15 @@ plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
   valid_idx <- proportion >= 0.001
   points <- points[valid_idx, ]
   
-  p <- ggplot(equi, aes(x=`Stress level`, y=`Directional derivative`)) +
-      geom_hline(yintercept = 1, color="darkgrey") +
-      geom_vline(xintercept = x_l, color="red", linetype="dashed") +
-      geom_vline(xintercept = x_h, color="red", linetype="dashed") +
-      geom_line() +
-      annotate("point", x = points$`Stress level`, y = points$`Directional derivative`, colour = "blue") +
-      xlim(0, 1) +
-      theme_minimal() +
-      theme(panel.grid = element_blank(), axis.line = element_line(color = "black"))
+  p <- ggplot2::ggplot(equi, ggplot2::aes(x=`Stress level`, y=`Directional derivative`)) +
+    ggplot2::geom_hline(yintercept = 1, color="darkgrey") +
+    ggplot2::geom_vline(xintercept = x_l, color="red", linetype="dashed") +
+    ggplot2::geom_vline(xintercept = x_h, color="red", linetype="dashed") +
+    ggplot2::geom_line() +
+    ggplot2::annotate("point", x = points$`Stress level`, y = points$`Directional derivative`, colour = "blue") +
+    ggplot2::xlim(0, 1) +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(panel.grid = ggplot2::element_blank(), axis.line = ggplot2::element_line(color = "black"))
   
   print(p)
   

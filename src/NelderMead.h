@@ -37,7 +37,7 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
 
     // initialize simplex
     step = 0.1 * abs(init).max();
-    if (trace) std::cout << "step: " << step << std::endl;
+    if (trace) Rcpp::Rcout << "step: " << step << std::endl;
 
     if (step == 0) step = 0.1;
     simplex.col(0) = init;  // let the first row to be input initial
@@ -61,7 +61,7 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
     double convrel = reltol * (fabs(fvec(0)) + reltol);
     // double convrel = reltol;
 
-    if (trace) std::cout << "convrel: " << convrel << std::endl;
+    if (trace) Rcpp::Rcout << "convrel: " << convrel << std::endl;
     if (trace) fvec.t().print("Build: ");
 
 
@@ -141,7 +141,7 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
         iter ++;
     }
 
-    if (trace) std::cout << "Iteration: " << iter << std::endl;
+    if (trace) Rcpp::Rcout << "Iteration: " << iter << std::endl;
 
     return std::make_tuple(simplex.col(0), fvec(0));
 }

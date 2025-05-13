@@ -1,13 +1,11 @@
-
-
-## Find optimal design ----------------------------------------------------------
+#' @export
 find_optimal_alt <- function(design_type, distribution,
                              design_info, pso_info,
                              coef = NULL,
                              coef_lower = NULL, coef_upper = NULL,
                              init_values = NULL,
                              highest_level = TRUE,
-                             n_threads = round(detectCores() * 0.5, digits = 0),
+                             n_threads = round(parallel::detectCores() * 0.5, digits = 0),
                              verbose = TRUE) {
   
   

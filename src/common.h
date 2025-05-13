@@ -10,10 +10,9 @@
 #include <omp.h>
 #endif
 
-#include <atomic>
-
 // [[Rcpp::depends(RcppArmadillo, RcppGSL)]]
 // [[Rcpp::plugins(openmp)]]
+// [[Rcpp::plugins(cpp14)]]
 
 
 typedef struct {

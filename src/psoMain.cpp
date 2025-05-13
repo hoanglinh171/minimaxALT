@@ -14,12 +14,12 @@ double pso_obj_func(const arma::vec &particle, int design_type, inner_optimizati
         if ((inner_param.opt_distribution == 1) | (inner_param.opt_distribution == 2)) {
             obj_val = opt_crit(particle, inner_param.init_coef, inner_param.opt_distribution, design_info_glob);
         } else {
-            std::cout << "Distribution for local optimal design must be 1 (weibull) or 2 (log normal)." << std::endl;
+            Rcpp::Rcout << "Distribution for local optimal design must be 1 (weibull) or 2 (log normal)." << std::endl;
             return constants::BIG;
         }
 
         if (obj_val < 0) {
-            std::cout << "obj value: " << obj_val << std::endl;
+            Rcpp::Rcout << "obj value: " << obj_val << std::endl;
             particle.t().raw_print("particle: ");
         }
         return obj_val;
@@ -50,7 +50,7 @@ double pso_obj_func(const arma::vec &particle, int design_type, inner_optimizati
         return exp(-obj_val);
 
     } else {
-        std::cout << "Design type must be 1 (local optimal design) or 2 (minimax design)." << std::endl;
+        Rcpp::Rcout << "Design type must be 1 (local optimal design) or 2 (minimax design)." << std::endl;
         return constants::BIG;
     }
 }
@@ -230,7 +230,7 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
     pso_dyn pso_dyn;
 
 
-    std::cout << "PSO Loop: Initializing..    " << std::endl;
+    Rcpp::Rcout << "PSO Loop: Initializing..    " << std::endl;
 
     // INITIALIZE RANDOM SWARM
     swarm = pso_opts.init_swarm;
@@ -260,8 +260,8 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
     g_hist.slice(0) = swarm;
     distribution_best_hist(0) = distribution_best;
 
-    std::cout << "OK" << std::endl;
-    std::cout << std::endl;
+    Rcpp::Rcout << "OK" << std::endl;
+    Rcpp::Rcout << std::endl;
     
 
     /* -- START PSO LOOP -- */
@@ -275,12 +275,12 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
 
             auto start = std::chrono::high_resolution_clock::now();
 
-            if (t == 0)  std::cout << "PSO Loop: Updating ..    " << std::endl;
+            if (t == 0)  Rcpp::Rcout << "PSO Loop: Updating ..    " << std::endl;
             if (verbose) {
-                std::cout << "Processing: " << t + 1 << "/" << max_iter << std::endl;
-                std::cout << "-------------------------------------------------------------------------------" << std::endl;
+                Rcpp::Rcout << "Processing: " << t + 1 << "/" << max_iter << std::endl;
+                Rcpp::Rcout << "-------------------------------------------------------------------------------" << std::endl;
             }
-            if (t == (max_iter - 1)) std::cout << std::endl;
+            if (t == (max_iter - 1)) Rcpp::Rcout << std::endl;
 
             // UPDATE VELOCITY
             pso_update_particle(pso_opts, pso_dyn, p_best, g_best, v_step, swarm);
@@ -319,9 +319,9 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
             auto stop = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
-            if (verbose) std::cout << "Time taken by the iteration: " 
+            if (verbose) Rcpp::Rcout << "Time taken by the iteration: " 
                                     << duration.count() / 1000 << " seconds" << std::endl;
-            if (verbose) std::cout << std::endl;
+            if (verbose) Rcpp::Rcout << std::endl;
 
                 // CHECK STOPPING CRITERION
 
@@ -348,7 +348,7 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
                     pso_result.model_set = model_set;
                     equivalence_plot_data(g_best, design_info_glob, pso_result);
 
-                    if(verbose) std::cout << "###### Max directional derivative: " << pso_result.max_dd << " ######" << std::endl;
+                    if(verbose) Rcpp::Rcout << "###### Max directional derivative: " << pso_result.max_dd << " ######" << std::endl;
 
                     // If the design is optimal, stop
                     if (abs(pso_result.max_dd - 1) < tol) {
@@ -358,13 +358,13 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
 
 
                 if (verbose) {
-                    std::cout << "Objective value: " << fg_best << std::endl;
+                    Rcpp::Rcout << "Objective value: " << fg_best << std::endl;
                     g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t().print("Levels: ");
                     softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t().print("Proportion: ");
-                    std::cout << "Distribution: " << distribution_best << std::endl;
+                    Rcpp::Rcout << "Distribution: " << distribution_best << std::endl;
                     coef_best.t().print("Parameters: ");
 
-                    std::cout << std::endl;
+                    Rcpp::Rcout << std::endl;
                 }
 
                 t++;
@@ -374,11 +374,11 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
 
         /* -- FINISH PSO LOOP -- */
     } catch (...) {
-        std::cout << "###### Interrupted by user ######" << std::endl;
-        std::cout << "Objective value: " << fg_best << std::endl;
+        Rcpp::Rcout << "###### Interrupted by user ######" << std::endl;
+        Rcpp::Rcout << "Objective value: " << fg_best << std::endl;
         g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t().print("Levels: ");
         softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t().print("Proportion: ");
-        std::cout << "Distribution: " << distribution_best << std::endl;
+        Rcpp::Rcout << "Distribution: " << distribution_best << std::endl;
         coef_best.t().print("Parameters: ");
     }
 
