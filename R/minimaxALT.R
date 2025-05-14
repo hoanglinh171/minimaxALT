@@ -13,7 +13,7 @@
 #' @param highest_level Logical. Whether the highest stress level of the generated design is the upper bound of stress range \code{x_h}. Default value is \code{TRUE}.
 #' @param n_threads Integer. Number of threads for parallel processing.
 #' @param verbose Logical. If \code{TRUE}, print optimization progress.
-#' @return A list
+#' @return
 #' \describe{
 #' \item{g_best}{The global best design found by the hybrid algorithm.}
 #' \item{coef_best}{The parameters corresponding to the global best design.}

@@ -42,7 +42,6 @@ find_optimal_alt(
 \item{verbose}{Logical. If \code{TRUE}, print optimization progress.}
 }
 \value{
-A list
 \describe{
 \item{g_best}{The global best design found by the hybrid algorithm.}
 \item{coef_best}{The parameters corresponding to the global best design.}

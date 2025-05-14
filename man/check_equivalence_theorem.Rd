@@ -14,7 +14,6 @@ check_equivalence_theorem(best_particle, model_set, design_info)
 \item{design_info}{A list containing design parameters such as factor levels, number of units, and other settings.}
 }
 \value{
-A list
 \describe{
 \item{max_directional_derivative}{Maximum directional derivative within design space.}
 \item{model_set}{The model set that is input.}

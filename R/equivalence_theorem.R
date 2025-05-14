@@ -6,7 +6,7 @@
 #' @param model_set A matrix of models, including parameters and distribution, that maximize the optimality criteria with the given best particle's position.
 #' @param design_info A list containing design parameters such as factor levels, number of units, and other settings.
 #'
-#' @return A list
+#' @return
 #' \describe{
 #' \item{max_directional_derivative}{Maximum directional derivative within design space.}
 #' \item{model_set}{The model set that is input.}
