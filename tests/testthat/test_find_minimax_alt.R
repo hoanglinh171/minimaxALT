@@ -1,29 +1,29 @@
 
-init_coef <- rbind(
-  c(1e-2, 1e-2, 1),
-  c(1e-6, 5e-3, 1),
-  c(1e-2, 1e-2, 0.7),
-  c(1e-6, 5e-3, 0.7),
-  c(1e-6, 1e-6, 1),
-  c(1e-6, 1e-6, 0.7)
-)
+# init_coef <- rbind(
+#   c(1e-2, 1e-2, 1),
+#   c(1e-6, 5e-3, 1),
+#   c(1e-2, 1e-2, 0.7),
+#   c(1e-6, 5e-3, 0.7),
+#   c(1e-6, 1e-6, 1),
+#   c(1e-6, 1e-6, 0.7)
+# )
+# 
+# init_values = initialize_values(init_coef_mat = init_coef)
 
-init_values = initialize_values(init_coef_mat = init_coef)
+design_info <- set_design_info(k_levels=3, j_factor=1, n_unit=300,
+                               censor_time=170, p=0.1, use_cond=c(0),
+                               sigma=0.6, x_l = 0, x_h = 1)
 
-design_info <- set_design_info(k_levels=4, j_factor=2, n_unit=170,
-                               censor_time=1000, p=0.001, use_cond=c(0, 0),
-                               sigma=0.6743, x_l = 0, x_h = 1)
-
-pso_info <- pso_setting(n_swarm=5, max_iter=5, early_stopping=3, tol=0.01)
+pso_info <- pso_setting(n_swarm=64, max_iter=128, early_stopping=10, tol=0.01)
 
 
-res <- find_optimal_alt(design_type=1, distribution=1, design_info=design_info,
+res <- find_optimal_alt(design_type=2, distribution=1, design_info=design_info,
                                    pso_info=pso_info,
-                                   coef=c(1.82*10^-6, 3.17*10^-6, 1),
-                                   # coef_lower = c(1e-6, 1e-6, 0.7),
-                                   # coef_upper = c(1e-2, 1e-2, 1),
+                                   # coef=c(1.82*10^-6, 3.17*10^-6, 1),
+                                   coef_lower = c(1e-6, 0.7),
+                                   coef_upper = c(1e-2, 1),
                                    # highest_level = FALSE,
-                                   init_values = init_values,
+                                   # init_values = init_values,
                                    verbose = TRUE, n_threads = 16
 )
 
