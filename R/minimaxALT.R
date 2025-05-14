@@ -1,3 +1,60 @@
+#' Find Optimal ALT Design Using Hybrid Algorithm
+#'
+#' Runs hybrid algorithm combining PSO and Nelder-Mead to find the optimal design of accelerated life test (ALT).
+#'
+#' @param design_type Integer. 1: Locally optimal design, 2: Minimax design.
+#' @param distribution Integer. The assumed failure time distribution, 1: Weibull, 2: Log-normal, 3: Model robust (both distribution Weibull and Log-normal).
+#' @param design_info A list from `set_design_info()` containing design specifications.
+#' @param pso_info A list from `pso_setting()` defining PSO hyperparameters.
+#' @param coef Optional. Fixed model coefficients. Required if \code{design_type = 1}.
+#' @param coef_lower Optional. Lower bounds for model parameters. Required if \code{design_type = 2}.
+#' @param coef_upper Optional. Upper bounds for model parameters. Required if \code{design_type = 2}.
+#' @param init_values Optional. A list of initial values from `initialize_values()`.
+#' @param highest_level Logical. Whether the highest stress level of the generated design is the upper bound of stress range \code{x_h}. Default value is \code{TRUE}.
+#' @param n_threads Integer. Number of threads for parallel processing.
+#' @param verbose Logical. If \code{TRUE}, print optimization progress.
+#' @return A list
+#' \describe{
+#' \item{g_best}{The global best design found by the hybrid algorithm.}
+#' \item{coef_best}{The parameters corresponding to the global best design.}
+#' \item{distribution_best}{The distribution corresponding to the global best design.}
+#' \item{max_directional_derivative}{Maximum directional derivative within design space, evaluated using equivalence theorem.}
+#' \item{fg_best}{The objective function value corresponding to the global best design.}
+#' \item{fg_best_hist}{A vector tracking the best objective function value of each iteration.}
+#' \item{p_best}{A matrix containing each particle's personal best design found during the optimization.}
+#' \item{fp_best}{A vector containing the objective function values corresponding to each particle's personal best.}
+#' \item{g_hist}{All particle positions of each iteration.}
+#' \item{coef_best_hist}{The parameters corresponding to the global best designs of each iteration.}
+#' \item{distribution_best_hist}{The distribution corresponding to the global best designs of each iteration.}
+#' \item{model_set}{A matrix containing distribution and model parameters of global best particles of each iteration, duplicated models are removed.}
+#' \item{model_weight}{The weight assigned to each model in the model set.}
+#' \item{equivalence_data}{Generated designs and their corresponding directional derivative given the optimal design \code{g_best}. Each design is a combination of factors with value in [0, 1]. These designs are data for plotting equivalence theorem plot.}
+#' }
+#' @examples
+#' design_info <- set_design_info(k_levels=2, j_factor=1, n_unit=300, 
+#'                                censor_time=183, p=0.1, use_cond=0, sigma=0.6)
+#' 
+#' pso_info <- pso_setting(n_swarm=32, max_iter=128, early_stopping=10, tol=0.01)
+#' 
+#' set.seed(10)
+#' res <- find_optimal_alt(design_type=1, distribution=1, design_info=design_info, 
+#'                         pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE)
+#' 
+#' summary(res)
+#' plot(res, x_l=0, x_h=1)
+#' 
+#' @references 
+#' \enumerate{
+#'   \item Chen P (2024). _globpso: Particle Swarm Optimization Algorithms and Differential Evolution for Minimization Problems_. R package version 1.2.1, <https://github.com/PingYangChen/globpso>.
+#'   \item Kennedy, J., & Eberhart, R. (1995). Particle swarm optimization. In Proceedings of the IEEE International Conference on Neural Networks (ICNN) (Vol. 4, pp. 1942–1948).
+#'   \item Meeker, W. Q., & Escobar, L. A. (1998). Statistical methods for reliability data. New York: Wiley-Interscience.
+#'   \item Nelder, J. A. and Mead, R. (1965). A simplex algorithm for function minimization. Computer Journal, 7, 308--313. 10.1093/comjnl/7.4.308.
+#' }
+#' @name find_optimal_alt
+#' @rdname find_optimal_alt
+#' @importFrom Rcpp evalCpp cppFunction sourceCpp
+#' @importFrom parallel detectCores
+#' @importFrom stats runif
 #' @export
 find_optimal_alt <- function(design_type, distribution,
                              design_info, pso_info,
@@ -31,9 +88,13 @@ find_optimal_alt <- function(design_type, distribution,
   
   stopifnot(is.numeric(design_info$n_support), is.numeric(design_info$n_factor), 
             is.numeric(design_info$n_unit), 
-            is.numeric(design_info$censor_time), is.numeric(design_info$sigma), 
-            is.numeric(design_info$p), 
-            is.numeric(design_info$x_l), is.numeric(design_info$x_h))
+            is.numeric(design_info$censor_time), is.numeric(design_info$sigma))
+  
+  stopifnot(design_info$p > 0, design_info$p <= 1)
+  
+  stopifnot(design_info$x_l >= 0, 
+            design_info$x_l < design_info$x_h, 
+            design_info$x_h <= 1)
   
   stopifnot(is.logical(design_info$reparam), is.logical(design_info$degenerate), 
             is.logical(verbose))

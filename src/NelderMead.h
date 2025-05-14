@@ -62,7 +62,7 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
     // double convrel = reltol;
 
     if (trace) Rcpp::Rcout << "convrel: " << convrel << std::endl;
-    if (trace) fvec.t().print("Build: ");
+    // if (trace) fvec.t().print("Build: ");
 
 
 
@@ -70,8 +70,8 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
     int iter = 0;
     while (iter < maxit) {
         if (fvec.has_nan()) {
-            simplex.raw_print("Simplex: ");
-            fvec.t().raw_print("Fvec: ");
+            // simplex.raw_print("Simplex: ");
+            // fvec.t().raw_print("Fvec: ");
         }
         order = arma::sort_index(fvec);
         simplex = simplex.cols(order);
@@ -98,14 +98,14 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
                 simplex.col(n) = e;
                 fvec(n) = fe;
 
-                if (trace) fvec.t().print("Extension: ");
+                // if (trace) fvec.t().print("Extension: ");
 
             } else {
                 // Replace w with r
                 simplex.col(n) = r;
                 fvec(n) = fr;
 
-                if (trace) fvec.t().print("Reflection: ");
+                // if (trace) fvec.t().print("Reflection: ");
 
             }
         } else if (fr < fvec(n)) {
@@ -113,7 +113,7 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
             simplex.col(n) = r;
             fvec(n) = fr;
 
-            if (trace) fvec.t().print("Hi Reduction");
+            // if (trace) fvec.t().print("Hi Reduction");
 
         } else {
             // Contraction
@@ -126,7 +126,7 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
                 simplex.col(n) = c;
                 fvec(n) = fc;
 
-                if (trace) fvec.t().print("Lo Reduction");
+                // if (trace) fvec.t().print("Lo Reduction");
 
             } else {
                 // Shrink
@@ -135,7 +135,7 @@ std::tuple<arma::vec, double> nelder_mead(const nelder_mead_params &nm_params,
                     fvec(k) = func(simplex.col(k), args...);
                 }
 
-                if (trace) fvec.t().print("Shrink: ");
+                // if (trace) fvec.t().print("Shrink: ");
             }
         }
         iter ++;

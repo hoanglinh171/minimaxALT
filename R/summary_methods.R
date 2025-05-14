@@ -70,15 +70,16 @@ plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
   valid_idx <- proportion >= 0.001
   points <- points[valid_idx, ]
   
-  p <- ggplot2::ggplot(equi, ggplot2::aes(x=`Stress level`, y=`Directional derivative`)) +
-    ggplot2::geom_hline(yintercept = 1, color="darkgrey") +
-    ggplot2::geom_vline(xintercept = x_l, color="red", linetype="dashed") +
-    ggplot2::geom_vline(xintercept = x_h, color="red", linetype="dashed") +
-    ggplot2::geom_line() +
-    ggplot2::annotate("point", x = points$`Stress level`, y = points$`Directional derivative`, colour = "blue") +
-    ggplot2::xlim(0, 1) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(panel.grid = ggplot2::element_blank(), axis.line = ggplot2::element_line(color = "black"))
+  
+  p <- ggplot(equi, aes(x=equi$`Stress level`, y=equi$`Directional derivative`)) +
+    geom_hline(yintercept = 1, color="darkgrey") +
+    geom_vline(xintercept = x_l, color="red", linetype="dashed") +
+    geom_vline(xintercept = x_h, color="red", linetype="dashed") +
+    geom_line() +
+    annotate("point", x = points$`Stress level`, y = points$`Directional derivative`, colour = "blue") +
+    xlim(0, 1) +
+    theme_minimal() +
+    theme(panel.grid = element_blank(), axis.line = element_line(color = "black"))
   
   print(p)
   

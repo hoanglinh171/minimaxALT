@@ -18,10 +18,6 @@ double pso_obj_func(const arma::vec &particle, int design_type, inner_optimizati
             return constants::BIG;
         }
 
-        if (obj_val < 0) {
-            Rcpp::Rcout << "obj value: " << obj_val << std::endl;
-            particle.t().raw_print("particle: ");
-        }
         return obj_val;
 
     // multi-start max coef
@@ -342,10 +338,10 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
 
                 if (verbose) {
                     Rcpp::Rcout << "Objective value: " << fg_best << std::endl;
-                    g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t().print("Levels: ");
-                    softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t().print("Proportion: ");
+                    Rcpp::Rcout << "Levels: " << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t() << std::endl;
+                    Rcpp::Rcout << "Proportion: " << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t() << std::endl;
                     Rcpp::Rcout << "Distribution: " << distribution_best << std::endl;
-                    coef_best.t().print("Parameters: ");
+                    Rcpp::Rcout << "Parameters: " << coef_best.t() << std::endl;
 
                     Rcpp::Rcout << std::endl;
                 }
@@ -359,10 +355,10 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
     } catch (...) {
         Rcpp::Rcout << "###### Interrupted by user ######" << std::endl;
         Rcpp::Rcout << "Objective value: " << fg_best << std::endl;
-        g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t().print("Levels: ");
-        softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t().print("Proportion: ");
+        Rcpp::Rcout << "Levels: " << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t() << std::endl;
+        Rcpp::Rcout << "Proportion: " << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t() << std::endl;
         Rcpp::Rcout << "Distribution: " << distribution_best << std::endl;
-        coef_best.t().print("Parameters: ");
+        Rcpp::Rcout << "Parameters: " << coef_best.t() << std::endl;
     }
 
     /* -- OUTPUT -- */

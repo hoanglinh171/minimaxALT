@@ -204,7 +204,7 @@ void equivalence_plot_data(const arma::vec &opt_alloc,
 
     int n_support = design_info_glob.n_support;
     int n_factor = design_info_glob.n_factor;
-    double x_l = design_info_glob.x_l, x_h = design_info_glob.x_h;
+    // double x_l = design_info_glob.x_l, x_h = design_info_glob.x_h;
     double opt_level_dd;
     arma::vec init_weigth(n), model_weigth(n);
 
