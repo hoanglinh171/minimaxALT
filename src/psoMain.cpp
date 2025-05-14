@@ -96,23 +96,6 @@ void pso_func_eval(int design_type, const arma::mat &swarm,
             distribution_vec(i) = inner_param.opt_distribution;
         }
     }
-    
-
-    // #pragma omp parallel for private(particle_global, min_feval) schedule(static)
-    // for (arma::uword i_swarm = 0; i_swarm < n_swarm; i_swarm++) {
-
-    //     inner_optimization inner_param =
-    //         {init_coef, coef_upp, coef_low, init_coef, init_local, local_upp, local_low, init_local, model, distribution};
-
-    //     particle_global = arma::conv_to<arma::vec>::from(swarm.col(i_swarm));
-    //     min_feval = pso_obj_func(particle_global, design_type, inner_param, design_info_glob, design_info_local, n_multi_start, init_coef_mat);
-
-    //     f_swarm(i_swarm) = min_feval;
-    //     coef.col(i_swarm) = inner_param.opt_coef;
-    //     swarm_local.col(i_swarm) = inner_param.opt_local;
-    //     distribution_vec(i_swarm) = inner_param.opt_distribution;
-
-    // }
 
 }
 

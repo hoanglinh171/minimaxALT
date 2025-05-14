@@ -204,6 +204,7 @@ void equivalence_plot_data(const arma::vec &opt_alloc,
 
     int n_support = design_info_glob.n_support;
     int n_factor = design_info_glob.n_factor;
+    double x_l = design_info_glob.x_l, x_h = design_info_glob.x_h;
     double opt_level_dd;
     arma::vec init_weigth(n), model_weigth(n);
 
@@ -233,6 +234,14 @@ void equivalence_plot_data(const arma::vec &opt_alloc,
         sim_data = sim_sum_der(model_weigth, model_set, opt_alloc, design_info_glob);
         plot_data = arma::join_cols(level_data, sim_data);
 
+        // arma::umat valid_range = (plot_data.cols(0, plot_data.n_cols - 2) >= 0) % (plot_data.cols(0, plot_data.n_cols - 2) <= 1);  
+        // 
+        // // Sum each column's valid entries
+        // arma::rowvec col_valid_counts = arma::sum(valid_range, 0);
+        // 
+        // // Find columns where all values are within [0,1]
+        // arma::uvec valid_cols = arma::find(col_valid_counts == X.n_rows);
+        
         max_dd_i = plot_data.col(plot_data.n_cols - 2).max();
         if (abs(max_dd_i - 1) < abs(max_dd - 1)) {
             max_dd = max_dd_i;
