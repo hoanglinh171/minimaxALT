@@ -3,7 +3,7 @@ Type: Package
 Title: Generate Optimal Designs of Accelerated Life Test using PSO-based Algorithm 
 Version: 1.0.0
 Encoding: UTF-8
-License: GPL-3
+License: GPL (>= 3)
 Authors@R: person("Hoai-Linh", "Hoang", email = "hoailinh.hoang17@gmail.com",
   role = c("aut", "cre"))
 Description: A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT) with multiple factors. Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles.
