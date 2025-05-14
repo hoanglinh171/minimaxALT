@@ -11,8 +11,7 @@
 #endif
 
 // [[Rcpp::depends(RcppArmadillo, RcppGSL)]]
-// [[Rcpp::plugins(openmp)]]
-// [[Rcpp::plugins(cpp14)]]
+// [[Rcpp::plugins(cpp11)]]
 
 
 typedef struct {

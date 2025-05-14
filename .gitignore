@@ -5,5 +5,5 @@
 .DS_Store
 .quarto
 .vscode
-.o
-.dll
+*.o
+*.dll

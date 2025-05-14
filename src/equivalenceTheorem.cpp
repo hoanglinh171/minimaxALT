@@ -216,8 +216,6 @@ void equivalence_plot_data(const arma::vec &opt_alloc,
     double max_dd = 10000, max_dd_i;
     arma::vec optimal_weigth;
 
-    GetRNGstate();
-
     for (int i = 0; i < 3; i++) {
         init_weigth = 2 * arma::randu(n);
         lse_opt(init_weigth, opt_alloc, design_info_glob, pso_result_str);
@@ -248,8 +246,6 @@ void equivalence_plot_data(const arma::vec &opt_alloc,
             optimal_weigth = model_weigth;
             max_plot_data = plot_data;
         }
-
-    PutRNGstate();
 
     }
 

@@ -74,11 +74,12 @@ void pso_func_eval(int design_type, const arma::mat &swarm,
     
     int batch_size = compute_batch_size(n_multi_start, design_info_glob.n_factor);
 
-    for (int start = 0; start < n_swarm; start += batch_size) {
-        Rcpp::checkUserInterrupt();  
+    for (int start = 0; start < n_swarm; start += batch_size) { 
         int end = std::min(start + batch_size, n_swarm);
     
-        #pragma omp parallel for private(particle_global, min_feval) schedule(dynamic)  
+        #ifdef _OPENMP
+        #pragma omp parallel for private(particle_global, min_feval) schedule(dynamic)
+        #endif
         for (int i = start; i < end; i++) {
             inner_optimization inner_param =
             {init_coef, coef_upp, coef_low, init_coef, init_local, local_upp, local_low, init_local, model, distribution};
@@ -91,6 +92,8 @@ void pso_func_eval(int design_type, const arma::mat &swarm,
             swarm_local.col(i) = inner_param.opt_local;
             distribution_vec(i) = inner_param.opt_distribution;
         }
+
+        Rcpp::checkUserInterrupt(); 
     }
 
 }

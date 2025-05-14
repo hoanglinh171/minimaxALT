@@ -6,7 +6,10 @@ Rcpp::List minimax_alt(int design_type, Rcpp::List &pso_info,
                        Rcpp::List &init_bound_info,
                        Rcpp::List &nelder_mead_settings,
                        double n_threads, bool verbose) {
+    
+    #ifdef _OPENMP
     omp_set_num_threads(n_threads);
+    #endif
 
     pso_options pso_opts;
     design_info design_info_local, design_info_glob;
