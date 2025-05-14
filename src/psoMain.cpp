@@ -123,8 +123,6 @@ void pso_update_particle(pso_options &pso_opts, const pso_dyn &pso_dyn,
     arma::mat vel_max_mat = repmat(vel_max, 1, n_swarm);
     arma::mat gb_mat = repmat(g_best, 1, n_swarm);
 
-    GetRNGstate();
-
     v_step = pso_dyn.w_cur * v_step + pso_opts.c1 * arma::randu(d_swarm, n_swarm) % (p_best - swarm) +
             pso_opts.c2 * arma::randu(d_swarm, n_swarm) % (gb_mat - swarm);
     // control velocity to be smaller than max allowed
@@ -132,7 +130,6 @@ void pso_update_particle(pso_options &pso_opts, const pso_dyn &pso_dyn,
     v_step = max(v_step, (-1) * vel_max_mat);
     swarm += v_step;
 
-    PutRNGstate();
 }
 
 
@@ -147,8 +144,6 @@ void pso_check_particle(const arma::vec &var_upper, const arma::vec &var_lower, 
 
     arma::mat swarm_tmp;
     // UPDATE POSITION
-
-    GetRNGstate();
 
     arma::umat swarm_change;
     swarm_change = find(swarm > var_upp_mat);
@@ -174,8 +169,6 @@ void pso_check_particle(const arma::vec &var_upper, const arma::vec &var_lower, 
         }
     }
     swarm.elem(swarm_change) = swarm_tmp.elem(swarm_change);
-
-    PutRNGstate();
 
 }
 
