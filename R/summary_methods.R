@@ -73,7 +73,7 @@ plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
   
   p <- ggplot(equi, aes(x=`Stress level`, y=`Directional derivative`)) +
     geom_hline(yintercept = 1, color="darkgrey") +
-    geom_vline(xintercept = x_l, color="red", linetype="dashed") +
+    # geom_vline(xintercept = x_l, color="red", linetype="dashed") +
     # geom_vline(xintercept = x_h, color="red", linetype="dashed") +
     geom_line() +
     annotate("point", x = points$`Stress level`, y = points$`Directional derivative`, colour = "blue") +
