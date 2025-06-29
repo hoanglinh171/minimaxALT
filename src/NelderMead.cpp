@@ -76,7 +76,7 @@ double max_coef_asr(inner_optimization &inner_param,
     int distribution_lognorm = 2, distribution_weibull = 1;
 
     if (inner_param.model == 3) {
-        std::vector distribution_lst = {distribution_weibull, distribution_lognorm};
+        arma::ivec distribution_lst = {distribution_weibull, distribution_lognorm};
 
         for (int glob_dist:distribution_lst) {
             for (int local_dist:distribution_lst) {

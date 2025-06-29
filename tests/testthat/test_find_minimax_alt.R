@@ -1,3 +1,4 @@
+devtools::load_all()
 
 # init_coef <- rbind(
 #   c(1e-2, 1e-2, 1),
