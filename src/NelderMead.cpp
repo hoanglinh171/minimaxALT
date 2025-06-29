@@ -29,7 +29,7 @@ double local_optimal(inner_optimization &inner_param, const design_info &design_
 
 double asr(const arma::vec &init_coef, inner_optimization &inner_param,
            const arma::vec &glob_alloc,
-           const design_info &design_info_glob, const design_info &design_info_local, int distribution) {
+           const design_info &design_info_glob, const design_info &design_info_local, int glob_distribution, int local_distribution) {
 
     // alloc: within 0 1 scale
     // local_alloc: no bound, infinity
@@ -43,7 +43,7 @@ double asr(const arma::vec &init_coef, inner_optimization &inner_param,
         coef_sigmoid = init_coef;
     }
 
-    nom = opt_crit(glob_alloc, coef_sigmoid, distribution, design_info_glob);
+    nom = opt_crit(glob_alloc, coef_sigmoid, glob_distribution, design_info_glob);
 
     if (nom == constants::BIG) {
         return - 1/constants::BIG;
@@ -51,7 +51,7 @@ double asr(const arma::vec &init_coef, inner_optimization &inner_param,
 
     // Denominator: optimal local design with the same coefficients
     inner_param.init_coef = coef_sigmoid;
-    denom = local_optimal(inner_param, design_info_local, distribution);
+    denom = local_optimal(inner_param, design_info_local, local_distribution);
 
     if (denom == constants::BIG) {
         return - 1/constants::BIG;
@@ -69,45 +69,69 @@ double asr(const arma::vec &init_coef, inner_optimization &inner_param,
 double max_coef_asr(inner_optimization &inner_param,
                     const arma::vec &glob_alloc,
                     const design_info &design_info_glob, const design_info &design_info_local) {
-    double asr_weibull, asr_lognorm, max_asr;
-    arma::vec par_weibull, par_lognorm, par, local_opt_tmp;
+    // double asr_weibull, asr_lognorm, max_asr;
+    // arma::vec par_weibull, par_lognorm, par, local_opt_tmp;
+    double res_asr, max_asr = 0;
+    arma::vec par, max_par, local_opt_tmp;
     int distribution_lognorm = 2, distribution_weibull = 1;
 
     if (inner_param.model == 3) {
+        std::vector distribution_lst = {distribution_weibull, distribution_lognorm};
 
-        std::tie(par_lognorm, asr_lognorm) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
-                                                         glob_alloc, design_info_glob, design_info_local, distribution_lognorm);
-        local_opt_tmp = inner_param.opt_local;
+        for (int glob_dist:distribution_lst) {
+            for (int local_dist:distribution_lst) {
 
-        std::tie(par_weibull, asr_weibull) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
-                                                         glob_alloc, design_info_glob, design_info_local, distribution_weibull);
+                std::tie(par, res_asr) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
+                                                 glob_alloc, design_info_glob, design_info_local, glob_dist, local_dist);
 
-        if (asr_lognorm < asr_weibull) {
-            max_asr = asr_lognorm;
-            par = par_lognorm;
-            inner_param.opt_local = local_opt_tmp;
-            inner_param.opt_distribution = distribution_lognorm;
-        } else {
-            max_asr = asr_weibull;
-            par = par_weibull;
-            inner_param.opt_distribution = distribution_weibull;
+                local_opt_tmp = inner_param.opt_local;
+
+                if (res_asr < max_asr) {
+                    max_asr = res_asr;
+                    max_par = par;
+                    inner_param.opt_local = local_opt_tmp;
+                    inner_param.opt_distribution = glob_dist;
+                }
+            }
+
         }
 
 
-    } else if ((inner_param.model == 1) | (inner_param.model == 2)){
+        // std::tie(par_lognorm, asr_lognorm) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
+        //                                                  glob_alloc, design_info_glob, design_info_local, distribution_lognorm, distribution_lognorm);
+        // local_opt_tmp = inner_param.opt_local;
 
-        std::tie(par, max_asr) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
-                                             glob_alloc, design_info_glob, design_info_local, inner_param.model);
+        // std::tie(par_weibull, asr_weibull) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
+        //                                                  glob_alloc, design_info_glob, design_info_local, distribution_weibull, distribution_weibull);
+
+
+
+        // if (asr_lognorm < asr_weibull) {
+        //     max_asr = asr_lognorm;
+        //     par = par_lognorm;
+        //     inner_param.opt_local = local_opt_tmp;
+        //     inner_param.opt_distribution = distribution_lognorm;
+        // } else {
+        //     max_asr = asr_weibull;
+        //     par = par_weibull;
+        //     inner_param.opt_distribution = distribution_weibull;
+        // }
+
+
+    } else if (inner_param.model == 1 | inner_param.model == 2){
+
+        std::tie(max_par, max_asr) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
+                                             glob_alloc, design_info_glob, design_info_local, inner_param.model, inner_param.model);
 
     } else {
-        Rcpp::Rcout << "Model must be 1 (weibull), 2 (log normal), or 3 (model robust)." << std::endl;
+        std::cout << "Model must be 1 (weibull), 2 (log normal), or 3 (model robust)." << std::endl;
         return constants::BIG;
     }
 
     if (design_info_glob.reparam) {
-        inner_param.opt_coef = to_sigmoid(par, inner_param.coef_lower, inner_param.coef_upper);
+        inner_param.opt_coef = to_sigmoid(max_par, inner_param.coef_lower, inner_param.coef_upper);
     } else {
-        inner_param.opt_coef = par;
+        inner_param.opt_coef = max_par;
     }
 
     // Evaluate and transform to asr
