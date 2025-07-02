@@ -155,7 +155,7 @@ double local_optimal(inner_optimization &inner_param, const design_info &design_
 double asr(const arma::vec &init_coef, inner_optimization &inner_param,
            const arma::vec &glob_alloc,
            const design_info &design_info_glob, const design_info &design_info_local,
-           int glob_distribution, int local_distribution);
+           int distribution);
 
 double max_coef_asr(inner_optimization &inner_param,
                     const arma::vec &glob_alloc,
