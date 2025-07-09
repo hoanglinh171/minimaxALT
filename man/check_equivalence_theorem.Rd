@@ -4,7 +4,7 @@
 \alias{check_equivalence_theorem}
 \title{Check Equivalence Theorem for Optimal Design}
 \usage{
-check_equivalence_theorem(best_particle, model_set, design_info)
+check_equivalence_theorem(best_particle, model_set, design_info, seed = 42)
 }
 \arguments{
 \item{best_particle}{A vector containing the best particle's position (i.e., stress levels and transformed allocated proportion).}
@@ -12,6 +12,8 @@ check_equivalence_theorem(best_particle, model_set, design_info)
 \item{model_set}{A matrix of models, including parameters and distribution, that maximize the optimality criteria with the given best particle's position.}
 
 \item{design_info}{A list containing design parameters such as factor levels, number of units, and other settings.}
+
+\item{seed}{Seed for reproducibility}
 }
 \value{
 \describe{

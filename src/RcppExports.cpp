@@ -13,8 +13,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // minimax_alt
-Rcpp::List minimax_alt(int design_type, Rcpp::List& pso_info, Rcpp::List& design_info_list, Rcpp::List& init_bound_info, Rcpp::List& nelder_mead_settings, double n_threads, bool verbose);
-RcppExport SEXP _minimaxALT_minimax_alt(SEXP design_typeSEXP, SEXP pso_infoSEXP, SEXP design_info_listSEXP, SEXP init_bound_infoSEXP, SEXP nelder_mead_settingsSEXP, SEXP n_threadsSEXP, SEXP verboseSEXP) {
+Rcpp::List minimax_alt(int design_type, Rcpp::List& pso_info, Rcpp::List& design_info_list, Rcpp::List& init_bound_info, Rcpp::List& nelder_mead_settings, int n_threads, bool verbose, int seed);
+RcppExport SEXP _minimaxALT_minimax_alt(SEXP design_typeSEXP, SEXP pso_infoSEXP, SEXP design_info_listSEXP, SEXP init_bound_infoSEXP, SEXP nelder_mead_settingsSEXP, SEXP n_threadsSEXP, SEXP verboseSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -23,9 +23,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::List& >::type design_info_list(design_info_listSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type init_bound_info(init_bound_infoSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type nelder_mead_settings(nelder_mead_settingsSEXP);
-    Rcpp::traits::input_parameter< double >::type n_threads(n_threadsSEXP);
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(minimax_alt(design_type, pso_info, design_info_list, init_bound_info, nelder_mead_settings, n_threads, verbose));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(minimax_alt(design_type, pso_info, design_info_list, init_bound_info, nelder_mead_settings, n_threads, verbose, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -54,24 +55,25 @@ BEGIN_RCPP
 END_RCPP
 }
 // equivalence_theorem
-Rcpp::List equivalence_theorem(Rcpp::NumericVector& alloc, Rcpp::List& design_info_list, Rcpp::NumericMatrix& model_set_in);
-RcppExport SEXP _minimaxALT_equivalence_theorem(SEXP allocSEXP, SEXP design_info_listSEXP, SEXP model_set_inSEXP) {
+Rcpp::List equivalence_theorem(Rcpp::NumericVector& alloc, Rcpp::List& design_info_list, Rcpp::NumericMatrix& model_set_in, int seed);
+RcppExport SEXP _minimaxALT_equivalence_theorem(SEXP allocSEXP, SEXP design_info_listSEXP, SEXP model_set_inSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector& >::type alloc(allocSEXP);
     Rcpp::traits::input_parameter< Rcpp::List& >::type design_info_list(design_info_listSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix& >::type model_set_in(model_set_inSEXP);
-    rcpp_result_gen = Rcpp::wrap(equivalence_theorem(alloc, design_info_list, model_set_in));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(equivalence_theorem(alloc, design_info_list, model_set_in, seed));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_minimaxALT_minimax_alt", (DL_FUNC) &_minimaxALT_minimax_alt, 7},
+    {"_minimaxALT_minimax_alt", (DL_FUNC) &_minimaxALT_minimax_alt, 8},
     {"_minimaxALT_transform_proportion", (DL_FUNC) &_minimaxALT_transform_proportion, 1},
     {"_minimaxALT_transform_sigmoid", (DL_FUNC) &_minimaxALT_transform_sigmoid, 3},
-    {"_minimaxALT_equivalence_theorem", (DL_FUNC) &_minimaxALT_equivalence_theorem, 3},
+    {"_minimaxALT_equivalence_theorem", (DL_FUNC) &_minimaxALT_equivalence_theorem, 4},
     {NULL, NULL, 0}
 };
 

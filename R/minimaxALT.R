@@ -13,6 +13,7 @@
 #' @param highest_level Logical. Whether the highest stress level of the generated design is the upper bound of stress range \code{x_h}. Default value is \code{TRUE}.
 #' @param n_threads Integer. Number of threads for parallel processing.
 #' @param verbose Logical. If \code{TRUE}, print optimization progress.
+#' @param seed Integer. Seed for reproducibility
 #' @return
 #' \describe{
 #' \item{g_best}{The global best design found by the hybrid algorithm.}
@@ -63,7 +64,8 @@ find_optimal_alt <- function(design_type, distribution,
                              init_values = NULL,
                              highest_level = TRUE,
                              n_threads = round(parallel::detectCores() * 0.5, digits = 0),
-                             verbose = TRUE) {
+                             verbose = TRUE,
+                             seed = 42) {
   
   
   ## Condition check
@@ -88,7 +90,8 @@ find_optimal_alt <- function(design_type, distribution,
   
   stopifnot(is.numeric(design_info$n_support), is.numeric(design_info$n_factor), 
             is.numeric(design_info$n_unit), 
-            is.numeric(design_info$censor_time), is.numeric(design_info$sigma))
+            is.numeric(design_info$censor_time), is.numeric(design_info$sigma)
+            )
   
   stopifnot(design_info$p > 0, design_info$p <= 1)
   
@@ -108,6 +111,8 @@ find_optimal_alt <- function(design_type, distribution,
     cat("It is recommended to run with ", round(0.8 * max_cores, digits = 0), "threads at most.\n")
     n_threads = round(0.8 * max_cores, digits = 0)
   }
+  
+  seed = round(seed, digits = 0)
   
   
   ## Define design info
@@ -158,6 +163,7 @@ find_optimal_alt <- function(design_type, distribution,
   
   
   if (is.null(init_swarm)) {
+    set.seed(seed = seed)
     init_swarm = matrix(runif(d_swarm * n_swarm), ncol = d_swarm)
     init_swarm = init_swarm * matrix(rep(var_upper - var_lower, n_swarm), ncol = d_swarm, byrow = TRUE) + 
       matrix(rep(var_lower, n_swarm), ncol = d_swarm, byrow = TRUE)
@@ -253,7 +259,7 @@ find_optimal_alt <- function(design_type, distribution,
 
   minimax_design <- minimax_alt(design_type, pso_info, design_info, init_bound_info,
                                 nelder_mead_settings,
-                                n_threads, verbose)
+                                n_threads, verbose, seed)
 
   
   class(minimax_design) <- "OptimalALT"
