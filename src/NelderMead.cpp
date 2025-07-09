@@ -76,26 +76,6 @@ double max_coef_asr(inner_optimization &inner_param,
     int distribution_lognorm = 2, distribution_weibull = 1;
 
     if (inner_param.model == 3) {
-    //     arma::ivec distribution_lst = {distribution_weibull, distribution_lognorm};
-
-    //     for (int glob_dist:distribution_lst) {
-    //         for (int local_dist:distribution_lst) {
-
-    //             std::tie(par, res_asr) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
-    //                                              glob_alloc, design_info_glob, design_info_local, glob_dist, local_dist);
-
-    //             local_opt_tmp = inner_param.opt_local;
-
-    //             if (res_asr < max_asr) {
-    //                 max_asr = res_asr;
-    //                 max_par = par;
-    //                 inner_param.opt_local = local_opt_tmp;
-    //                 inner_param.opt_distribution = glob_dist;
-    //             }
-    //         }
-
-    //     }
-
 
         std::tie(par_lognorm, asr_lognorm) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
                                                          glob_alloc, design_info_glob, design_info_local, distribution_lognorm);
@@ -124,7 +104,7 @@ double max_coef_asr(inner_optimization &inner_param,
                                              glob_alloc, design_info_glob, design_info_local, inner_param.model);
 
     } else {
-        std::cout << "Model must be 1 (weibull), 2 (log normal), or 3 (model robust)." << std::endl;
+        Rcpp::Rcout << "Model must be 1 (weibull), 2 (log normal), or 3 (model robust)." << std::endl;
         return constants::BIG;
     }
 

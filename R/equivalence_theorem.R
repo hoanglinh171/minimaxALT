@@ -62,6 +62,6 @@ check_equivalence_theorem <- function(best_particle, model_set, design_info, see
   ## Define design info
   design_info$use_cond = use_cond
   
-  return(equivalence_theorem(best_particle, design_info, model_set))
+  return(equivalence_theorem(best_particle, design_info, model_set, seed))
 }
 

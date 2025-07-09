@@ -259,7 +259,7 @@ find_optimal_alt <- function(design_type, distribution,
 
   minimax_design <- minimax_alt(design_type, pso_info, design_info, init_bound_info,
                                 nelder_mead_settings,
-                                n_threads, verbose)
+                                n_threads, verbose, seed)
 
   
   class(minimax_design) <- "OptimalALT"
