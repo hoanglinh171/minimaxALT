@@ -221,7 +221,8 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
     fp_best = f_swarm;	p_best = swarm;
 
     // INITIALIZE GLOBAL BEST
-    fg_best = fp_best.min(g_best_idx);
+    g_best_idx = fp_best.index_min();
+    fg_best = fp_best.min();
     g_best = p_best.col(g_best_idx);
     coef_best = coef.col(g_best_idx);
     distribution_best = distribution_swarm(g_best_idx);
@@ -272,7 +273,8 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
                 p_best.cols(colchange) = swarm.cols(colchange);
             }
             if (min(fp_best) < fg_best) {
-                fg_best = fp_best.min(g_best_idx);
+                g_best_idx = fp_best.index_min();
+                fg_best = fp_best.min();
                 g_best = p_best.col(g_best_idx);
                 coef_best = coef.col(g_best_idx);  //pso_dyn.succ_GB = 1;
                 distribution_best = distribution_swarm(g_best_idx);

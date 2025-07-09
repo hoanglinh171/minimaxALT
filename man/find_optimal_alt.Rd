@@ -15,7 +15,8 @@ find_optimal_alt(
   init_values = NULL,
   highest_level = TRUE,
   n_threads = round(parallel::detectCores() * 0.5, digits = 0),
-  verbose = TRUE
+  verbose = TRUE,
+  seed = 42
 )
 }
 \arguments{
@@ -40,6 +41,8 @@ find_optimal_alt(
 \item{n_threads}{Integer. Number of threads for parallel processing.}
 
 \item{verbose}{Logical. If \code{TRUE}, print optimization progress.}
+
+\item{seed}{Integer. Seed for reproducibility}
 }
 \value{
 \describe{

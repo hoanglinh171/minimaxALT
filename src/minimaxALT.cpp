@@ -5,11 +5,13 @@ Rcpp::List minimax_alt(int design_type, Rcpp::List &pso_info,
                        Rcpp::List &design_info_list,
                        Rcpp::List &init_bound_info,
                        Rcpp::List &nelder_mead_settings,
-                       double n_threads, bool verbose) {
+                       int n_threads, bool verbose, int seed) {
     
     #ifdef _OPENMP
     omp_set_num_threads(n_threads);
     #endif
+    
+    arma::arma_rng::set_seed(seed);
 
     pso_options pso_opts;
     design_info design_info_local, design_info_glob;
@@ -85,11 +87,14 @@ Rcpp::NumericVector transform_sigmoid(Rcpp::NumericVector &inbound_sigmoid,
 // [[Rcpp::export]]
 Rcpp::List equivalence_theorem(Rcpp::NumericVector &alloc, 
                                 Rcpp::List &design_info_list, 
-                                Rcpp::NumericMatrix &model_set_in) {
+                                Rcpp::NumericMatrix &model_set_in,
+                                int seed) {
     
     pso_result pso_result_str;
     design_info design_info_glob, design_info_local;
-
+    
+    arma::arma_rng::set_seed(seed);
+    
     get_design_info(design_info_list, design_info_local, design_info_glob);
     
     arma::mat model_set (model_set_in.begin(), model_set_in.nrow(), model_set_in.ncol(), false);

@@ -70,7 +70,9 @@ double max_coef_asr(inner_optimization &inner_param,
                     const arma::vec &glob_alloc,
                     const design_info &design_info_glob, const design_info &design_info_local) {
     double asr_weibull, asr_lognorm, max_asr;
-    arma::vec par_weibull, par_lognorm, par, local_opt_tmp;
+    arma::vec par_weibull, par_lognorm, max_par, local_opt_tmp;
+    // double res_asr, max_asr = 0;
+    // arma::vec par, max_par, local_opt_tmp;
     int distribution_lognorm = 2, distribution_weibull = 1;
 
     if (inner_param.model == 3) {
@@ -82,21 +84,23 @@ double max_coef_asr(inner_optimization &inner_param,
         std::tie(par_weibull, asr_weibull) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
                                                          glob_alloc, design_info_glob, design_info_local, distribution_weibull);
 
+
+
         if (asr_lognorm < asr_weibull) {
             max_asr = asr_lognorm;
-            par = par_lognorm;
+            max_par = par_lognorm;
             inner_param.opt_local = local_opt_tmp;
             inner_param.opt_distribution = distribution_lognorm;
         } else {
             max_asr = asr_weibull;
-            par = par_weibull;
+            max_par = par_weibull;
             inner_param.opt_distribution = distribution_weibull;
         }
 
 
     } else if ((inner_param.model == 1) | (inner_param.model == 2)){
 
-        std::tie(par, max_asr) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
+        std::tie(max_par, max_asr) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
                                              glob_alloc, design_info_glob, design_info_local, inner_param.model);
 
     } else {
@@ -105,9 +109,9 @@ double max_coef_asr(inner_optimization &inner_param,
     }
 
     if (design_info_glob.reparam) {
-        inner_param.opt_coef = to_sigmoid(par, inner_param.coef_lower, inner_param.coef_upper);
+        inner_param.opt_coef = to_sigmoid(max_par, inner_param.coef_lower, inner_param.coef_upper);
     } else {
-        inner_param.opt_coef = par;
+        inner_param.opt_coef = max_par;
     }
 
     // Evaluate and transform to asr
