@@ -118,7 +118,7 @@ double max_coef_asr(inner_optimization &inner_param,
         }
 
 
-    } else if (inner_param.model == 1 | inner_param.model == 2){
+    } else if ((inner_param.model == 1) | (inner_param.model == 2)){
 
         std::tie(max_par, max_asr) = nelder_mead(NM_PARAMS, inner_param.init_coef, asr, inner_param,
                                              glob_alloc, design_info_glob, design_info_local, inner_param.model);

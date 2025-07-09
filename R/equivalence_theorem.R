@@ -5,6 +5,7 @@
 #' @param best_particle A vector containing the best particle's position (i.e., stress levels and transformed allocated proportion).
 #' @param model_set A matrix of models, including parameters and distribution, that maximize the optimality criteria with the given best particle's position.
 #' @param design_info A list containing design parameters such as factor levels, number of units, and other settings.
+#' @param seed Seed for reproducibility
 #'
 #' @return
 #' \describe{
@@ -38,7 +39,7 @@
 #' @rdname check_equivalence_theorem
 #' @importFrom Rcpp evalCpp cppFunction sourceCpp
 #' @export
-check_equivalence_theorem <- function(best_particle, model_set, design_info) {
+check_equivalence_theorem <- function(best_particle, model_set, design_info, seed = 42) {
   
   stopifnot(design_info$opt_type == "C" || design_info$opt_type == "D")
   
@@ -55,6 +56,8 @@ check_equivalence_theorem <- function(best_particle, model_set, design_info) {
   
   stopifnot(is.vector(best_particle))
   stopifnot(is.matrix(model_set))
+  
+  seed = round(seed, digits = 0)
   
   ## Define design info
   design_info$use_cond = use_cond

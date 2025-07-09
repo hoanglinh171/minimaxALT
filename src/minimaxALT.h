@@ -11,13 +11,14 @@ Rcpp::List minimax_alt(int design_type, Rcpp::List &pso_info,
     Rcpp::List &design_info_list,
     Rcpp::List &init_bound_info,
     Rcpp::List &nelder_mead_settings,
-    double n_threads, bool verbose);
+    int n_threads, bool verbose, int seed);
 
 Rcpp::NumericVector transform_proportion(Rcpp::NumericVector &dirichlet_prop);
 
 Rcpp::List equivalence_theorem(Rcpp::NumericVector &alloc, 
     Rcpp::List &design_info_list, 
-    Rcpp::NumericMatrix &model_set_in);
+    Rcpp::NumericMatrix &model_set_in,
+    int seed);
     
 
 #endif // MINIMAXALT_H
