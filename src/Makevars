@@ -11,11 +11,11 @@ PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `$(R_HO
 
 
 # For Intel Mac
-PKG_CPPFLAGS = -I/usr/local/include
+PKG_CPPFLAGS = -I. -I../inst/include -I/usr/local/include
 PKG_LIBS = -L/usr/local/lib -lgsl -lgslcblas -lm
 
 # For Apple Silicon (M1/M2) Mac
-PKG_CPPFLAGS = -I/opt/homebrew/include
+PKG_CPPFLAGS = -I. -I../inst/include -I/opt/homebrew/include
 PKG_LIBS = -L/opt/homebrew/lib -lgsl -lgslcblas -lm
 
 
