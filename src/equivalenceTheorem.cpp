@@ -213,47 +213,41 @@ void equivalence_plot_data(const arma::vec &opt_alloc,
     arma::mat X = x_matrix(opt_alloc, n_support, n_factor,
                            design_info_glob.n_unit);
 
-    double max_dd = 10000, max_dd_i;
+    double max_dd = 10000;
     arma::vec optimal_weigth;
 
-    for (int i = 0; i < 3; i++) {
-        init_weigth = 2 * arma::randu(n);
-        lse_opt(init_weigth, opt_alloc, design_info_glob, pso_result_str);
-        model_weigth = pso_result_str.model_weight;
+    init_weigth = 2 * arma::randu(n);
+    lse_opt(init_weigth, opt_alloc, design_info_glob, pso_result_str);
+    model_weigth = pso_result_str.model_weight;
 
 
-        for (int i = 0; i < n_support; i++) {
-            arma::vec one_alloc_level = X(i, arma::span(1, n_factor)).t();
-            opt_level_dd = sum_direction_derive(model_weigth, model_set, opt_alloc, design_info_glob, one_alloc_level);
-            level_data(i, arma::span(0, n_factor - 1)) = X(i, arma::span(1, n_factor));
-            level_data(i, level_data.n_cols - 2) = opt_level_dd;
-        }
-
-        sim_data = sim_sum_der(model_weigth, model_set, opt_alloc, design_info_glob);
-        plot_data = arma::join_cols(level_data, sim_data);
-        
-        // Extract first (n-1) columns
-        arma::mat plot_data_sub = plot_data.cols(0, plot_data.n_cols - 3);
-        
-        // Logical mask: each row where all values in [x_l, x_h]
-        arma::uvec valid_rows = arma::all((plot_data_sub >= design_info_glob.x_l) && (plot_data_sub <= design_info_glob.x_h), 1);  
-        
-        // Filter corresponding n-th column values
-        arma::vec nth_col_valid = plot_data.col(plot_data.n_cols - 2);
-        nth_col_valid = nth_col_valid.elem(arma::find(valid_rows));
-        
-        max_dd_i = nth_col_valid.max();
-        if (abs(max_dd_i - 1) < abs(max_dd - 1)) {
-            max_dd = max_dd_i;
-            optimal_weigth = model_weigth;
-            max_plot_data = plot_data;
-        }
-
+    for (int i = 0; i < n_support; i++) {
+        arma::vec one_alloc_level = X(i, arma::span(1, n_factor)).t();
+        opt_level_dd = sum_direction_derive(model_weigth, model_set, opt_alloc, design_info_glob, one_alloc_level);
+        level_data(i, arma::span(0, n_factor - 1)) = X(i, arma::span(1, n_factor));
+        level_data(i, level_data.n_cols - 2) = opt_level_dd;
     }
 
-    pso_result_str.model_weight = optimal_weigth;
+    sim_data = sim_sum_der(model_weigth, model_set, opt_alloc, design_info_glob);
+    plot_data = arma::join_cols(level_data, sim_data);
+    
+    // Extract first (n-1) columns
+    arma::mat plot_data_sub = plot_data.cols(0, plot_data.n_cols - 3);
+    
+    // Logical mask: each row where all values in [x_l, x_h]
+    arma::uvec valid_rows = arma::all((plot_data_sub >= design_info_glob.x_l) && (plot_data_sub <= design_info_glob.x_h), 1);  
+    
+    // Filter corresponding n-th column values
+    arma::vec nth_col_valid = plot_data.col(plot_data.n_cols - 2);
+    nth_col_valid = nth_col_valid.elem(arma::find(valid_rows));
+    
+    max_dd = nth_col_valid.max();
+
+
+
+    pso_result_str.model_weight = model_weigth;
     pso_result_str.max_dd = max_dd;
-    pso_result_str.equivalence_data = max_plot_data;
+    pso_result_str.equivalence_data = plot_data;
 
 }
 

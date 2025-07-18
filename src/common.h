@@ -35,8 +35,8 @@ namespace constants {
     const double LOW_P = 1e-14;
     const double DERIV_TOL = 1e-7;
 
-    const double UPP_EXP = 20;
-    const double LOW_EXP = -20;
+    const double UPP_EXP = 30;
+    const double LOW_EXP = -30;
     const double LN_TOL = 1e-14;
 
     const double MAXIT = 500;

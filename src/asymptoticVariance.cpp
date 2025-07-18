@@ -560,14 +560,9 @@ double opt_crit(const arma::vec& alloc,
     double obj_value;
     int check_degenerate_error;
 
-
-    // Degenerate design requires equal x's
-    check_degenerate_error = check_degenerate(coef, design_info_out);
-    if (check_degenerate_error == -1) {
-        return constants::BIG;
-    }
-
-    // Check condition of coefficient if reparam is true
+    // Check condition of coefficients if reparam = TRUE
+    // If reparam = FALSE, reparameterize coefficients (temp_coef) then check condition
+    arma::vec temp_coef = coef;
     if (!design_info_out.reparam) {
         for (arma::uword i = 0; i < coef.n_elem; i++) {
             if (!std::isfinite(coef(i)) || coef(i) == 0) {
@@ -575,22 +570,28 @@ double opt_crit(const arma::vec& alloc,
             }
         }
 
-        coef = inverse_reparameterize(design_info_out.censor_time, coef, design_info_out.sigma, distribution, design_info_out.x_l);
+        temp_coef = inverse_reparameterize(design_info_out.censor_time, coef, design_info_out.sigma, distribution, design_info_out.x_l);
     }
 
     // 0 <= p <= 1
-    for (arma::uword i = 0; i < coef.n_elem; i++) {
-        if (coef(i) < 0 || coef(i) > 1) {
+    for (arma::uword i = 0; i < temp_coef.n_elem; i++) {
+        if (temp_coef(i) < 0 || temp_coef(i) > 1) {
             return constants::BIG;
         }
     }
 
     // pL <= pH
-    for (arma::uword i = 0; i < coef.n_elem - 1; i++) {
+    for (arma::uword i = 0; i < temp_coef.n_elem - 1; i++) {
         arma::uword j = i + 1;
-        if (coef(i) >= coef(j)) {
+        if (temp_coef(i) >= temp_coef(j)) {
             return constants::BIG;
         }
+    }
+
+    // Degenerate design requires equal x's, change coef vector if degenerate = TRUE
+    check_degenerate_error = check_degenerate(coef, design_info_out);
+    if (check_degenerate_error == -1) {
+        return constants::BIG;
     }
 
     try {

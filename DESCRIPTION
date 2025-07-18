@@ -4,14 +4,22 @@ Title: Generate Optimal Designs of Accelerated Life Test using PSO-based Algorit
 Version: 1.0.0
 Encoding: UTF-8
 License: GPL (>= 3)
-Authors@R: person("Hoai-Linh", "Hoang", email = "hoailinh.hoang17@gmail.com",
-  role = c("aut", "cre"))
+Authors@R: c(
+  person("Hoai-Linh", "Hoang", email = "hoailinh.hoang17@gmail.com", role = c("aut", "cre")),
+  person("I-Chen", "Lee", role = c("aut")),
+  person("Ping-Yang", "Chen", role = c("aut")),
+  person("Ray-Bing", "Chen", role = c("aut")),
+  person("Weng Kee", "Wong", role = c("aut"))
+)
+  
 Description: A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT) with multiple factors. Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles.
 SystemRequirements:
     GNU Scientific Library (GSL),
     OpenMP
 Imports: 
     Rcpp (>= 1.0.13),
+    RcppArmadillo (>= 14.0.0.1),
+    RcppGSL (>= 0.3.13),
     ggplot2 (>= 3.0.0),
     parallel (>= 4.0.0),
     stats,

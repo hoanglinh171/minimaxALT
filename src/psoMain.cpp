@@ -1,6 +1,8 @@
+// Code adapted and modified from the 'globpso' package (CRAN), originally written by Ping-Yang Chen
+// Source: https://cran.r-project.org/web/packages/globpso/index.html
+
+
 #include <psoMain.h>
-
-
 
 double pso_obj_func(const arma::vec &particle, int design_type, inner_optimization &inner_param,
                     const design_info &design_info_glob, const design_info &design_info_local,

@@ -1,3 +1,8 @@
+// Some code adapted and modified from the base R function `optim()`
+// Source: https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html
+// Part of the R 'stats' package, licensed under GPL-2
+
+
 #ifndef NELDERMEAD_H
 #define NELDERMEAD_H
 

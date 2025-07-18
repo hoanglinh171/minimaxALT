@@ -1,21 +1,11 @@
 
-## We want C++11
-
 ## Header files from our package, RcppGSL comes in via LinkingTo: in DESCRIPTIPM
 PKG_CPPFLAGS = -I. -I../inst/include
 
 
 ## If we want LTO (for testing or optimization)
 PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS)
-PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `$(R_HOME)/bin/Rscript -e "RcppGSL:::LdFlags()"`
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) `$(R_HOME)/bin/Rscript -e "RcppGSL::LdFlags()"`
 
-
-# For Intel Mac
-PKG_CPPFLAGS = -I. -I../inst/include -I/usr/local/include
-PKG_LIBS = -L/usr/local/lib -lgsl -lgslcblas -lm
-
-# For Apple Silicon (M1/M2) Mac
-PKG_CPPFLAGS = -I. -I../inst/include -I/opt/homebrew/include
-PKG_LIBS = -L/opt/homebrew/lib -lgsl -lgslcblas -lm
 
 
