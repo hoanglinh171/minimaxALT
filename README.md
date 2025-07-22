@@ -72,7 +72,7 @@ design_info <- set_design_info(k_levels=3, j_factor=1, n_unit=300, censor_time=1
 pso_info <- pso_setting(n_swarm=20, max_iter=100, early_stopping=10, tol=0.0001)
 
 ## Run algorithm to find optimal designs
-res <- find_optimal_alt(design_type=2, distribution=1, 
+res <- find_optimal_alt(design_type=1, distribution=1, 
                         design_info=design_info, 
                         pso_info=pso_info, 
                         coef = c(1e-3, 0.9),
