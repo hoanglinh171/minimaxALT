@@ -15,7 +15,7 @@ SystemRequirements:
     GNU Scientific Library (GSL),
     OpenMP
 Imports: 
-    Rcpp (>= 1.0.13),
+    Rcpp (>= 1.0.11),
     RcppArmadillo (>= 14.0.0.1),
     RcppGSL (>= 0.3.13),
     ggplot2 (>= 3.0.0),
@@ -23,7 +23,7 @@ Imports:
     stats,
     graphics
 Depends: R (>= 4.0.0)
-LinkingTo: Rcpp (>= 1.0.13),
+LinkingTo: Rcpp (>= 1.0.11),
     RcppArmadillo (>= 14.0.0.1),
     RcppGSL (>= 0.3.13)
 RoxygenNote: 7.3.2
