@@ -10,8 +10,6 @@ Authors@R: c(
   person("Ping-Yang", "Chen", role = "aut"),
   person("Ray-Bing", "Chen", role = "aut"),
   person("Weng Kee", "Wong", role = "aut"))
-
-  
 Description: A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT) with multiple factors. Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles.
 SystemRequirements:
     GNU Scientific Library (GSL),
