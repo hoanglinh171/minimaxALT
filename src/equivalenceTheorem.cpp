@@ -11,14 +11,6 @@ arma::mat one_level_fisher(const arma::vec& opt_alloc, const arma::vec& p_coef, 
     int n_unit = design_info_glob.n_unit;
     double censor_time = design_info_glob.censor_time;
     double sigma = design_info_glob.sigma;
-    double x_l = design_info_glob.x_l;
-    arma::vec coef;                        
-    
-    if (design_info_glob.reparam) {
-        coef = reparameterize(censor_time, p_coef, sigma, distribution, x_l);
-    } else {
-        coef = p_coef;
-    }
 
     arma::mat X = x_matrix(opt_alloc, n_support, n_factor, n_unit);
     X.shed_col(X.n_cols - 1);
@@ -28,7 +20,7 @@ arma::mat one_level_fisher(const arma::vec& opt_alloc, const arma::vec& p_coef, 
     alloc_unit(0) = n_unit;
     X(0, arma::span(1, n_factor)) = one_alloc_level.t();
 
-    arma::vec std_censor = std_failure_time(censor_time, X, sigma, coef);
+    arma::vec std_censor = std_failure_time(censor_time, X, sigma, p_coef);
     arma::vec p_censor = p_failure_time(std_censor, distribution);
 
     arma::mat fisher_mtx = fisher_info(X, std_censor, p_censor, alloc_unit, sigma, distribution);
@@ -47,11 +39,17 @@ double direction_deriv(const arma::vec& opt_alloc, const arma::vec& model_vec,
     double x_l = design_info_glob.x_l;
     double p = design_info_glob.p;
     arma::vec use_cond = design_info_glob.use_cond;
+    arma::vec coef;
 
     int distribution = model_vec(model_vec.size() - 1);
     arma::vec p_coef = model_vec.subvec(0, model_vec.size() - 2);
 
-    arma::vec coef = reparameterize(censor_time, p_coef, sigma, distribution, x_l);
+    if (design_info_glob.reparam) {
+      coef = reparameterize(censor_time, p_coef, sigma, distribution, x_l);
+    } else {
+      coef = p_coef;
+    }
+    
     arma::mat X = x_matrix(opt_alloc, n_support, n_factor, n_unit);
     arma::vec alloc_unit = X.col(X.n_cols - 1);
     X.shed_col(X.n_cols - 1);
@@ -62,7 +60,7 @@ double direction_deriv(const arma::vec& opt_alloc, const arma::vec& model_vec,
     arma::mat fisher_mtx = fisher_info(X, std_censor, p_censor, alloc_unit, sigma, distribution);
     arma::mat cov_mtx = cov_matrix(fisher_mtx);
 
-    arma::mat fisher_mtx_one = one_level_fisher(opt_alloc, p_coef, distribution, design_info_glob, one_alloc_level);
+    arma::mat fisher_mtx_one = one_level_fisher(opt_alloc, coef, distribution, design_info_glob, one_alloc_level);
 
     arma::vec deriv_log_tp = gradient(arma::join_cols(arma::vec({sigma}), coef), p,
                                       arma::join_cols(arma::vec({1}), use_cond), distribution);
