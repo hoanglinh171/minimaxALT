@@ -7,3 +7,4 @@
 ^LICENSE\.md$
 ^README\.md$
 ^test\.R$
+^cran-comments\.md$

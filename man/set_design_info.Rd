@@ -15,8 +15,7 @@ set_design_info(
   x_l = 0,
   x_h = 1,
   opt_type = "C",
-  reparam = TRUE,
-  degenerate = FALSE
+  reparam = TRUE
 )
 }
 \arguments{
@@ -41,8 +40,6 @@ set_design_info(
 \item{opt_type}{Character. Optimality criterion, currently only C-optimality is supported. Default is "C".}
 
 \item{reparam}{Logical. Whether reparameterization is applied to model parameters. Reparameterization is supported for all design types, while non-reparameterization is only available for locally optimal design \code{design_type = 1}. Default is TRUE.}
-
-\item{degenerate}{Logical. Whether the generated optimal design is degenerate design. Default is FALSE.}
 }
 \value{
 A list of design specifications

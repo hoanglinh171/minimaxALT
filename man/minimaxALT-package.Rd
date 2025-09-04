@@ -4,9 +4,9 @@
 \name{minimaxALT-package}
 \alias{minimaxALT}
 \alias{minimaxALT-package}
-\title{minimaxALT: Generate Optimal Designs of Accelerated Life Test using PSO-based Algorithm}
+\title{minimaxALT: Generate Optimal Designs of Accelerated Life Test using PSO-Based Algorithm}
 \description{
-A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT) with multiple factors. Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles.
+A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT). Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles. For more detailed, see Lee et al. (2025), Optimal Robust Strategies for Accelerated Life Tests and Fatigue Testing of Polymer Composite Materials, submitted to Annals of Applied Statistics, \url{https://imstat.org/journals-and-publications/annals-of-applied-statistics/annals-of-applied-statistics-next-issues/}, and Hoang (2025), Model-Robust Minimax Design of Accelerated Life Tests via PSO-based Hybrid Algorithm, Master' Thesis, Unpublished.
 }
 \seealso{
 Useful links:
@@ -18,6 +18,14 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Hoai-Linh Hoang \email{hoailinh.hoang17@gmail.com}
+
+Authors:
+\itemize{
+  \item I-Chen Lee
+  \item Ping-Yang Chen
+  \item Ray-Bing Chen
+  \item Weng Kee Wong
+}
 
 }
 \keyword{internal}

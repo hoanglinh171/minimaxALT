@@ -44,7 +44,11 @@ void get_design_info(Rcpp::List &design_info_list, design_info &design_info_loca
     design_info_glob.x_h = (double)Rcpp::as<double>(design_info_list["x_h"]);
 
     design_info_glob.reparam = (bool)Rcpp::as<bool>(design_info_list["reparam"]);
+<<<<<<< HEAD
     design_info_glob.degenerate = (bool)Rcpp::as<bool>(design_info_list["degenerate"]);
+=======
+    design_info_glob.degenerate = false;
+>>>>>>> 8f76acf (reset repo)
 
     design_info_glob.opt_type = (std::string)Rcpp::as<std::string>(design_info_list["opt_type"]);
 

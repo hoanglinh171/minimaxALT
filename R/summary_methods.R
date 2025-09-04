@@ -16,12 +16,14 @@ summary.OptimalALT <- function(object, ...) {
   level_names <- c(level_names, "W")
   rownames(design) <- level_names
   
-  cat("Summary of generated optimal ALT design\n")
-  cat("-----------------------------------------------\n")
-  cat("X: Stress levels, W: Corresponding proportion\n")
-  print(design)
-  cat("\nObjective Value:", object$fg_best, "\n")
-  cat("Max directional derivative:", object$max_directional_derivative)
+  if (inherits(object, "OptimalALT")) {
+    cat("Summary of generated optimal ALT design\n")
+    cat("-----------------------------------------------\n")
+    cat("X: Stress levels, W: Corresponding proportion\n")
+    print(design)
+    cat("\nObjective Value:", object$fg_best, "\n")
+    cat("Max directional derivative:", object$max_directional_derivative)
+  }
 
   invisible(object)
 }
@@ -60,6 +62,7 @@ plot.OptimalALT <- function(x, ...) {
 }
 
 
+utils::globalVariables(c("Stress level", "Directional derivative"))
 plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
   equi <- as.data.frame(equivalence_data)
   

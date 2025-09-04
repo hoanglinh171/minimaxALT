@@ -1,6 +1,6 @@
 Package: minimaxALT
 Type: Package
-Title: Generate Optimal Designs of Accelerated Life Test using PSO-based Algorithm 
+Title: Generate Optimal Designs of Accelerated Life Test using PSO-Based Algorithm 
 Version: 1.0.0
 Encoding: UTF-8
 License: GPL (>= 3)
@@ -10,7 +10,7 @@ Authors@R: c(
   person("Ping-Yang", "Chen", role = "aut"),
   person("Ray-Bing", "Chen", role = "aut"),
   person("Weng Kee", "Wong", role = "aut"))
-Description: A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT) with multiple factors. Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles.
+Description: A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT). Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles. For more detailed, see Lee et al. (2025), Optimal Robust Strategies for Accelerated Life Tests and Fatigue Testing of Polymer Composite Materials, submitted to Annals of Applied Statistics, <https://imstat.org/journals-and-publications/annals-of-applied-statistics/annals-of-applied-statistics-next-issues/>, and Hoang (2025), Model-Robust Minimax Design of Accelerated Life Tests via PSO-based Hybrid Algorithm, Master' Thesis, Unpublished. 
 SystemRequirements:
     GNU Scientific Library (GSL),
     OpenMP

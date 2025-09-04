@@ -14,9 +14,9 @@ find_optimal_alt(
   coef_upper = NULL,
   init_values = NULL,
   highest_level = TRUE,
-  n_threads = round(parallel::detectCores() * 0.5, digits = 0),
+  n_threads = 1,
   verbose = TRUE,
-  seed = 42
+  seed
 )
 }
 \arguments{
@@ -71,9 +71,9 @@ design_info <- set_design_info(k_levels=2, j_factor=1, n_unit=300,
 
 pso_info <- pso_setting(n_swarm=32, max_iter=128, early_stopping=10, tol=0.01)
 
-set.seed(10)
 res <- find_optimal_alt(design_type=1, distribution=1, design_info=design_info, 
-                        pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE)
+                        pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE,
+                        seed = 42)
 
 summary(res)
 plot(res, x_l=0, x_h=1)
@@ -83,6 +83,7 @@ plot(res, x_l=0, x_h=1)
 \enumerate{
   \item Chen P (2024). _globpso: Particle Swarm Optimization Algorithms and Differential Evolution for Minimization Problems_. R package version 1.2.1, <https://github.com/PingYangChen/globpso>.
   \item Kennedy, J., & Eberhart, R. (1995). Particle swarm optimization. In Proceedings of the IEEE International Conference on Neural Networks (ICNN) (Vol. 4, pp. 1942–1948).
+  \item Lee, I. C., Chen, R. B., Wong, W. K., (in press). Optimal Robust Strategies for Accelerated Life Tests and Fatigue Testing of Polymer Composite Materials. Annals of Applied Statistics. <https://imstat.org/journals-and-publications/annals-of-applied-statistics/annals-of-applied-statistics-next-issues/>
   \item Meeker, W. Q., & Escobar, L. A. (1998). Statistical methods for reliability data. New York: Wiley-Interscience.
   \item Nelder, J. A. and Mead, R. (1965). A simplex algorithm for function minimization. Computer Journal, 7, 308--313. 10.1093/comjnl/7.4.308.
 }
