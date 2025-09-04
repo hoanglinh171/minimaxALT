@@ -1,7 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <armadillo>
 #include <RcppArmadillo.h>
 #include <RcppGSL.h>
 #include <chrono>

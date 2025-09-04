@@ -7,7 +7,8 @@ res <- find_optimal_alt(design_type=1, distribution=1,
                         design_info=design_info, 
                         pso_info=pso_info, 
                         coef = c(1e-3, 0.9),
-                        verbose = TRUE, n_threads = 1
+                        verbose = TRUE, n_threads = 1,
+                        seed = 42
                         )
 
 summary(res)

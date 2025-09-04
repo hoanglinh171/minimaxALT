@@ -8,3 +8,4 @@
 ^README\.md$
 ^test\.R$
 ^cran-comments\.md$
+^\.github$
