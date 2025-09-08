@@ -42,7 +42,8 @@
 #' @export
 check_equivalence_theorem <- function(best_particle, model_set, design_info, seed) {
   
-  stopifnot(design_info$opt_type == "C" || design_info$opt_type == "D")
+  # stopifnot(design_info$opt_type == "C")
+  design_info$opt_type = "C"
   
   stopifnot(is.numeric(design_info$n_support), is.numeric(design_info$n_factor), 
             is.numeric(design_info$n_unit), 

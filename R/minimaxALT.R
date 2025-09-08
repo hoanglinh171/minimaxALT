@@ -84,7 +84,8 @@ find_optimal_alt <- function(design_type, distribution,
   
   stopifnot(distribution == 1 || distribution == 2 || distribution == 3)
   
-  stopifnot(design_info$opt_type == "C")
+  # stopifnot(design_info$opt_type == "C")
+  design_info$opt_type = "C"
   
   stopifnot(is.numeric(design_info$n_support), is.numeric(design_info$n_factor), 
             is.numeric(design_info$n_unit), 

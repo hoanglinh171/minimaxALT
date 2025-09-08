@@ -11,7 +11,6 @@
 #' @param sigma Numeric. Scale parameter of the lifetime distribution.
 #' @param x_l Numeric. Lower bound of stress range. Default is 0.
 #' @param x_h Numeric. Upper bound of stress range. Default is 1.
-#' @param opt_type Character. Optimality criterion, currently only C-optimality is supported. Default is "C".
 #' @param reparam Logical. Whether reparameterization is applied to model parameters. Reparameterization is supported for all design types, while non-reparameterization is only available for locally optimal design \code{design_type = 1}. Default is TRUE.
 #' @return A list of design specifications
 #' @examples
@@ -23,7 +22,7 @@
 set_design_info <- function(k_levels, j_factor, n_unit, censor_time, 
                             p, use_cond, sigma, 
                             x_l = 0, x_h = 1,
-                            opt_type = "C", reparam = TRUE) {
+                            reparam = TRUE) {
   
   design_info_list <- list()
 
@@ -34,7 +33,6 @@ set_design_info <- function(k_levels, j_factor, n_unit, censor_time,
   design_info_list$sigma = sigma
   design_info_list$p = p
   design_info_list$use_cond = use_cond
-  design_info_list$opt_type = opt_type
   design_info_list$reparam = reparam
   design_info_list$x_l = x_l
   design_info_list$x_h = x_h
