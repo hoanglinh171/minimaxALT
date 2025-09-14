@@ -1,6 +1,7 @@
 
 ## Header files from our package, RcppGSL comes in via LinkingTo: in DESCRIPTIPM
-PKG_CPPFLAGS = -I. -I../inst/include
+PKG_CPPFLAGS = -I. -I../inst/include 
+# -DARMA_DONT_USE_WRAPPER -DARMA_USE_CURRENT
 
 
 ## If we want LTO (for testing or optimization)
