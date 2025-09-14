@@ -4,7 +4,7 @@
 \alias{check_equivalence_theorem}
 \title{Check Equivalence Theorem for Optimal Design}
 \usage{
-check_equivalence_theorem(best_particle, model_set, design_info, seed)
+check_equivalence_theorem(best_particle, model_set, design_info, seed = 42)
 }
 \arguments{
 \item{best_particle}{A vector containing the best particle's position (i.e., stress levels and transformed allocated proportion).}
@@ -38,8 +38,7 @@ model_set <- rbind(
 
 equi <- check_equivalence_theorem (best_particle=best_particle, 
                                     model_set=model_set, 
-                                    design_info=design_info,
-                                    seed = 42)
+                                    design_info=design_info)
 
 equi$max_directional_derivative
 

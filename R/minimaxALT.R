@@ -32,14 +32,15 @@
 #' \item{equivalence_data}{Generated designs and their corresponding directional derivative given the optimal design \code{g_best}. Each design is a combination of factors with value in [0, 1]. These designs are data for plotting equivalence theorem plot.}
 #' }
 #' @examples
+#' 
 #' design_info <- set_design_info(k_levels=2, j_factor=1, n_unit=300, 
 #'                                censor_time=183, p=0.1, use_cond=0, sigma=0.6)
 #' 
 #' pso_info <- pso_setting(n_swarm=32, max_iter=128, early_stopping=10, tol=0.01)
 #' 
+#' set.seed(42)
 #' res <- find_optimal_alt(design_type=1, distribution=1, design_info=design_info, 
-#'                         pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE,
-#'                         seed = 42)
+#'                         pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE)
 #' 
 #' summary(res)
 #' plot(res, x_l=0, x_h=1)
@@ -66,7 +67,7 @@ find_optimal_alt <- function(design_type, distribution,
                              highest_level = TRUE,
                              n_threads = 1,
                              verbose = TRUE,
-                             seed) {
+                             seed = 42) {
   
   
   ## Condition check
@@ -165,7 +166,6 @@ find_optimal_alt <- function(design_type, distribution,
   
   
   if (is.null(init_swarm)) {
-    set.seed(seed = seed)
     init_swarm = matrix(runif(d_swarm * n_swarm), ncol = d_swarm)
     init_swarm = init_swarm * matrix(rep(var_upper - var_lower, n_swarm), ncol = d_swarm, byrow = TRUE) + 
       matrix(rep(var_lower, n_swarm), ncol = d_swarm, byrow = TRUE)

@@ -16,7 +16,7 @@ find_optimal_alt(
   highest_level = TRUE,
   n_threads = 1,
   verbose = TRUE,
-  seed
+  seed = 42
 )
 }
 \arguments{
@@ -66,14 +66,15 @@ find_optimal_alt(
 Runs hybrid algorithm combining PSO and Nelder-Mead to find the optimal design of accelerated life test (ALT).
 }
 \examples{
+
 design_info <- set_design_info(k_levels=2, j_factor=1, n_unit=300, 
                                censor_time=183, p=0.1, use_cond=0, sigma=0.6)
 
 pso_info <- pso_setting(n_swarm=32, max_iter=128, early_stopping=10, tol=0.01)
 
+set.seed(42)
 res <- find_optimal_alt(design_type=1, distribution=1, design_info=design_info, 
-                        pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE,
-                        seed = 42)
+                        pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE)
 
 summary(res)
 plot(res, x_l=0, x_h=1)

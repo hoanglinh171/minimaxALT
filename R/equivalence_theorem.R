@@ -26,8 +26,7 @@
 #' 
 #' equi <- check_equivalence_theorem (best_particle=best_particle, 
 #'                                     model_set=model_set, 
-#'                                     design_info=design_info,
-#'                                     seed = 42)
+#'                                     design_info=design_info)
 #' 
 #' equi$max_directional_derivative
 #' 
@@ -40,7 +39,7 @@
 #' @rdname check_equivalence_theorem
 #' @importFrom Rcpp evalCpp cppFunction sourceCpp
 #' @export
-check_equivalence_theorem <- function(best_particle, model_set, design_info, seed) {
+check_equivalence_theorem <- function(best_particle, model_set, design_info, seed = 42) {
   
   # stopifnot(design_info$opt_type == "C")
   design_info$opt_type = "C"
