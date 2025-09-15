@@ -2,7 +2,7 @@ CXX_STD = CXX14
 
 ## This assumes that the LIB_GSL variable points to working GSL libraries
 
-PKG_CPPFLAGS = -I$(LIB_GSL)/include -I. -I../inst/include 
+PKG_CPPFLAGS = -I$(LIB_GSL)/include -I. -I../inst/include -DARMA_USE_CURRENT
 PKG_CXXFLAGS = -O3
 PKG_CXXFLAGS += $(SHLIB_OPENMP_CXXFLAGS)
 PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS)
