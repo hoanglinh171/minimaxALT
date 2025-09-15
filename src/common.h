@@ -10,7 +10,6 @@
 #endif
 
 // [[Rcpp::depends(RcppArmadillo, RcppGSL)]]
-// [[Rcpp::plugins(cpp11)]]
 
 
 typedef struct {
