@@ -1,0 +1,33 @@
+{
+    "args": [
+        "-std=gnu++14",
+        "-I/usr/share/R/include",
+        "-DNDEBUG",
+        "-I/home/lu/minimaxALT_Rjournal_submission/minimaxALT_1.0.3/minimaxALT/src",
+        "-I/home/lu/minimaxALT_Rjournal_submission/minimaxALT_1.0.3/minimaxALT/inst/include",
+        "-fopenmp",
+        "-DARMA_USE_CURRENT",
+        "-fpic",
+        "-ffile-prefix-map=/build/r-base-4A2Reg/r-base-4.1.2=.",
+        "-fstack-protector-strong",
+        "-D_FORTIFY_SOURCE=2",
+        "-I/home/lu/R/x86_64-pc-linux-gnu-library/4.1/Rcpp/include",
+        "-I/home/lu/R/x86_64-pc-linux-gnu-library/4.1/RcppArmadillo/include",
+        "-I/home/lu/R/x86_64-pc-linux-gnu-library/4.1/RcppGSL/include",
+        "-DEIGEN_DONT_VECTORIZE",
+        "-I/usr/lib/llvm-14/lib/clang/14.0.0/include",
+        "-I/usr/include/c++/11",
+        "-I/usr/include/x86_64-linux-gnu/c++/11",
+        "-I/usr/include/c++/11/backward",
+        "-I/usr/lib/gcc/x86_64-linux-gnu/11/include",
+        "-I/usr/local/include",
+        "-I/usr/include/x86_64-linux-gnu",
+        "-I/usr/include"
+    ],
+    "pch": "RcppArmadillo",
+    "is_cpp": true,
+    "hash": "176647365617579195131757919527",
+    "compiler": "6247981364537157182",
+    "rversion": "4.1.2",
+    "dbversion": 4
+}
