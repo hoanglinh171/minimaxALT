@@ -53,3 +53,4 @@ rsconnect/
 
 # cpp compiling files
 *.o
+*.so
