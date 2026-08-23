@@ -1,11 +1,21 @@
 ######################### methods for OptimalALT object #######################
+# extract(): extract design data
 # print(): print PSO and optimality check information
 # summary(): summarize generated designs
 # plot(): plot optimality check
 
 
 #' @export
-print.OptimalALT <- function(x, ...) {
+extract.OptimalALT <- function(object, ...) {
+    stopifnot(inherits(object, "OptimalALT"))
+    
+    return(extract_design(object))
+    
+} 
+
+
+#' @export
+print.OptimalALT <- function(object, ...) {
     stopifnot(inherits(object, "OptimalALT"))
     
     iterations <- length(object$fg_best_hist) - 1
@@ -23,7 +33,7 @@ print.OptimalALT <- function(x, ...) {
     cat("Number of model candidates:", model_num,"\n")
     cat("Max directional derivative:", object$max_directional_derivative, "\n")
     
-    invisible(x)
+    invisible(object)
 }
 
 
@@ -32,19 +42,7 @@ print.OptimalALT <- function(x, ...) {
 summary.OptimalALT <- function(object, ...) {
   stopifnot(inherits(object, "OptimalALT"))
   
-  n_factor <- length(object$coef_best) - 1
-  n_support <- (length(object$g_best) + 1) / (n_factor + 1)
-  
-  stress_levels <- matrix(object$g_best[1:(n_support*n_factor)], 
-                          ncol = n_support, byrow=TRUE)
-  
-  prop <- get_proportion(object$g_best[(n_support*n_factor + 1):length(object$g_best)])
-  
-  design <- rbind(stress_levels, prop)
-  
-  level_names <- paste0("X", 1:n_factor)
-  level_names <- c(level_names, "W")
-  rownames(design) <- level_names
+  design <- extract_design(object)
   
   cat("Summary of generated optimal ALT design\n")
   cat("-----------------------------------------------\n")
@@ -89,6 +87,27 @@ plot.OptimalALT <- function(x, ...) {
   invisible(x)
 }
 
+
+extract_design <- function(object) {
+    stopifnot(inherits(object, "OptimalALT"))
+    
+    n_factor <- length(object$coef_best) - 1
+    n_support <- (length(object$g_best) + 1) / (n_factor + 1)
+    
+    stress_levels <- matrix(object$g_best[1:(n_support*n_factor)], 
+                            ncol = n_support, byrow=TRUE)
+    
+    prop <- get_proportion(object$g_best[(n_support*n_factor + 1):length(object$g_best)])
+    
+    design <- rbind(stress_levels, prop)
+    
+    level_names <- paste0("X", 1:n_factor)
+    level_names <- c(level_names, "W")
+    rownames(design) <- level_names
+    
+    return(design)
+    
+}
 
 plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
   equi <- as.data.frame(equivalence_data)
