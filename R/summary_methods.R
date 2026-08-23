@@ -1,29 +1,67 @@
+######################### methods for OptimalALT object #######################
+# extract(): extract design data
+# print(): print PSO and optimality check information
+# summary(): summarize generated designs
+# plot(): plot optimality check
+
+
+#' @export
+extract.OptimalALT <- function(object) {
+    stopifnot(inherits(object, "OptimalALT"))
+    
+    return(extract_design(object))
+    
+} 
+
+#' @export 
+update_optimality_check.OptimalALT <- function(object, check) {
+    stopifnot(inherits(object, "OptimalALT"))
+    stopifnot(inherits(check, "OptimalityCheck"))
+    
+    object$max_directional_derivative = check$max_directional_derivative
+    object$model_set = check$model_set
+    object$model_weight = check$model_weight
+    object$equivalence_data = check$equivalence_data
+    
+    return(object)
+}
+
+#' @export
+print.OptimalALT <- function(object, ...) {
+    stopifnot(inherits(object, "OptimalALT"))
+    
+    iterations <- length(object$fg_best_hist) - 1
+    model_num <- nrow(object$model_set)
+    
+    cat("PSO implementation\n")
+    cat("-----------------------------------------------\n")
+    cat("Iterations:", iterations, "\n")
+    cat("Optimal particle:", object$g_best, "\n")
+    cat("Objective value:", object$fg_best, "\n")
+    cat("\n")
+    
+    cat("Optimality check\n")
+    cat("-----------------------------------------------\n")
+    cat("Number of model candidates:", model_num,"\n")
+    cat("Max directional derivative:", object$max_directional_derivative, "\n")
+    
+    invisible(object)
+}
+
+
+
 #' @export
 summary.OptimalALT <- function(object, ...) {
   stopifnot(inherits(object, "OptimalALT"))
   
-  n_factor <- length(object$coef_best) - 1
-  n_support <- (length(object$g_best) + 1) / (n_factor + 1)
+  design <- extract_design(object)
   
-  stress_levels <- matrix(object$g_best[1:(n_support*n_factor)], 
-                          ncol = n_support, byrow=TRUE)
-  
-  prop <- get_proportion(object$g_best[(n_support*n_factor + 1):length(object$g_best)])
-  
-  design <- rbind(stress_levels, prop)
-  
-  level_names <- paste0("X", 1:n_factor)
-  level_names <- c(level_names, "W")
-  rownames(design) <- level_names
-  
-  if (inherits(object, "OptimalALT")) {
-    cat("Summary of generated optimal ALT design\n")
-    cat("-----------------------------------------------\n")
-    cat("X: Stress levels, W: Corresponding proportion\n")
-    print(design)
-    cat("\nObjective Value:", object$fg_best, "\n")
-    cat("Max directional derivative:", object$max_directional_derivative)
-  }
+  cat("Summary of generated optimal ALT design\n")
+  cat("-----------------------------------------------\n")
+  cat("X: Stress levels, W: Corresponding proportion\n")
+  print(design)
+  cat("\nObjective Value:", object$fg_best, "\n")
+  cat("Max directional derivative:", object$max_directional_derivative, "\n")
 
   invisible(object)
 }
@@ -61,8 +99,6 @@ plot.OptimalALT <- function(x, ...) {
   invisible(x)
 }
 
-
-utils::globalVariables(c("Stress level", "Directional derivative"))
 plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
   equi <- as.data.frame(equivalence_data)
   

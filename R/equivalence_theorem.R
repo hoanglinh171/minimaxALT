@@ -1,6 +1,6 @@
-#' Check Equivalence Theorem for Optimal Design
+#' Check Optimality for Optimal Design
 #'
-#' Evaluates whether a design satisfies the equivalence theorem.
+#' Evaluates whether a design is optimal by the equivalence theorem.
 #'
 #' @param best_design A matrix containing stress levels and allocated proportion of the design.
 #' @param model_set A matrix of models, including parameters and distribution, that maximize the optimality criteria with the given best particle's position.
@@ -27,22 +27,21 @@
 #'   c(0.01, 0.9, 1),
 #'   c(0.01, 0.99, 2))
 #' 
-#' equi <- check_equivalence_theorem (best_design=best_design, 
-#'                                     model_set=model_set, 
-#'                                     design_info=design_info)
-#' 
-#' equi$max_directional_derivative
+#' equi <- check_optimality (best_design=best_design, 
+#'                           model_set=model_set, 
+#'                           design_info=design_info)
+#' print(equi)                          
 #' 
 #' @references 
 #' \enumerate{
 #'   \item Müller, C. H., & Pázman, A. (1998). Applications of necessary and sufficient conditions for maximin efficient designs. Metrika, 48, 1–19.
 #'   \item Huang, M.-N. L., & Lin, C.-S. (2006). Minimax and maximin efficient designs for estimating the location-shift parameter of parallel models with dual responses. Journal of Multivariate Analysis, 97(1), 198–210.
 #' }
-#' @name check_equivalence_theorem
-#' @rdname check_equivalence_theorem
+#' @name check_optimality
+#' @rdname check_optimality
 #' @importFrom Rcpp evalCpp cppFunction sourceCpp
 #' @export
-check_equivalence_theorem <- function(best_design, model_set, design_info, seed = 42) {
+check_optimality <- function(best_design, model_set, design_info, seed = 42) {
   
   # transform design into particle
   stopifnot(is.matrix(best_design))
@@ -57,10 +56,7 @@ check_equivalence_theorem <- function(best_design, model_set, design_info, seed 
   
   transform_prop <- get_transform_prop(best_design[j,])
   best_particle <- c(t(best_design[1:j-1, 1:k]))
-  best_particle <- c(best_particle, transform_prop) 
-  
-  # stopifnot(design_info$opt_type == "C")
-  design_info$opt_type = "C"
+  best_particle <- c(best_particle, transform_prop)
   
   stopifnot(is.numeric(design_info$n_support), is.numeric(design_info$n_factor), 
             is.numeric(design_info$n_unit), 
@@ -79,7 +75,35 @@ check_equivalence_theorem <- function(best_design, model_set, design_info, seed 
   
   ## Define design info
   design_info$use_cond = use_cond
+  # stopifnot(design_info$opt_type == "C")
+  design_info$opt_type = "C"
   
-  return(equivalence_theorem(best_particle, design_info, model_set, seed))
+  optimality <- equivalence_theorem(best_particle, design_info, model_set, seed)
+  optimality$design <- best_design
+  
+  class(optimality) <- "OptimalityCheck"
+  
+  return(optimality)
+}
+
+
+#' @export
+print.OptimalityCheck <- function(object, show_candidates = FALSE) {
+    stopifnot(inherits(object, "OptimalityCheck"))
+    
+    model_num <- nrow(object$model_set)
+    colnames(object$model_set) <- c("coef_1", "coef_2", "distribution")
+    
+    cat("Optimality check\n")
+    cat("-----------------------------------------------\n")
+    cat("Design: \n")
+    print(object$design)
+    cat("\n")
+    cat("Number of model candidates:", model_num,"\n")
+    if(show_candidates) {
+        print(object$model_set)
+        cat("\n")
+    }
+    cat("Max directional derivative:", object$max_directional_derivative, "\n")
 }
 
