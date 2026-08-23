@@ -6,13 +6,25 @@
 
 
 #' @export
-extract.OptimalALT <- function(object, ...) {
+extract.OptimalALT <- function(object) {
     stopifnot(inherits(object, "OptimalALT"))
     
     return(extract_design(object))
     
 } 
 
+#' @export 
+update_optimality_check.OptimalALT <- function(object, check) {
+    stopifnot(inherits(object, "OptimalALT"))
+    stopifnot(inherits(check, "OptimalityCheck"))
+    
+    object$max_directional_derivative = check$max_directional_derivative
+    object$model_set = check$model_set
+    object$model_weight = check$model_weight
+    object$equivalence_data = check$equivalence_data
+    
+    return(object)
+}
 
 #' @export
 print.OptimalALT <- function(object, ...) {
@@ -85,28 +97,6 @@ plot.OptimalALT <- function(x, ...) {
   }
   
   invisible(x)
-}
-
-
-extract_design <- function(object) {
-    stopifnot(inherits(object, "OptimalALT"))
-    
-    n_factor <- length(object$coef_best) - 1
-    n_support <- (length(object$g_best) + 1) / (n_factor + 1)
-    
-    stress_levels <- matrix(object$g_best[1:(n_support*n_factor)], 
-                            ncol = n_support, byrow=TRUE)
-    
-    prop <- get_proportion(object$g_best[(n_support*n_factor + 1):length(object$g_best)])
-    
-    design <- rbind(stress_levels, prop)
-    
-    level_names <- paste0("X", 1:n_factor)
-    level_names <- c(level_names, "W")
-    rownames(design) <- level_names
-    
-    return(design)
-    
 }
 
 plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {

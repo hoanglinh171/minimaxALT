@@ -40,3 +40,24 @@ get_transform_prop <- function(prop) {
   
   return(transform_prop)
 }
+
+extract_design <- function(object) {
+    stopifnot(inherits(object, "OptimalALT"))
+    
+    n_factor <- length(object$coef_best) - 1
+    n_support <- (length(object$g_best) + 1) / (n_factor + 1)
+    
+    stress_levels <- matrix(object$g_best[1:(n_support*n_factor)], 
+                            ncol = n_support, byrow=TRUE)
+    
+    prop <- get_proportion(object$g_best[(n_support*n_factor + 1):length(object$g_best)])
+    
+    design <- rbind(stress_levels, prop)
+    
+    level_names <- paste0("X", 1:n_factor)
+    level_names <- c(level_names, "W")
+    rownames(design) <- level_names
+    
+    return(design)
+    
+}
