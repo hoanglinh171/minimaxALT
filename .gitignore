@@ -9,6 +9,9 @@
 # Build ignore files
 .Rbuildignore
 
+# Project files
+.Rproj
+
 # User-specific files
 .Ruserdata
 
