@@ -1,3 +1,33 @@
+######################### methods for OptimalALT object #######################
+# print(): print PSO and optimality check information
+# summary(): summarize generated designs
+# plot(): plot optimality check
+
+
+#' @export
+print.OptimalALT <- function(x, ...) {
+    stopifnot(inherits(object, "OptimalALT"))
+    
+    iterations <- length(object$fg_best_hist) - 1
+    model_num <- nrow(object$model_set)
+    
+    cat("PSO implementation\n")
+    cat("-----------------------------------------------\n")
+    cat("Iterations:", iterations, "\n")
+    cat("Optimal particle:", object$g_best, "\n")
+    cat("Objective value:", object$fg_best, "\n")
+    cat("\n")
+    
+    cat("Optimality check\n")
+    cat("-----------------------------------------------\n")
+    cat("Number of model candidates:", model_num,"\n")
+    cat("Max directional derivative:", object$max_directional_derivative, "\n")
+    
+    invisible(x)
+}
+
+
+
 #' @export
 summary.OptimalALT <- function(object, ...) {
   stopifnot(inherits(object, "OptimalALT"))
@@ -16,14 +46,12 @@ summary.OptimalALT <- function(object, ...) {
   level_names <- c(level_names, "W")
   rownames(design) <- level_names
   
-  if (inherits(object, "OptimalALT")) {
-    cat("Summary of generated optimal ALT design\n")
-    cat("-----------------------------------------------\n")
-    cat("X: Stress levels, W: Corresponding proportion\n")
-    print(design)
-    cat("\nObjective Value:", object$fg_best, "\n")
-    cat("Max directional derivative:", object$max_directional_derivative)
-  }
+  cat("Summary of generated optimal ALT design\n")
+  cat("-----------------------------------------------\n")
+  cat("X: Stress levels, W: Corresponding proportion\n")
+  print(design)
+  cat("\nObjective Value:", object$fg_best, "\n")
+  cat("Max directional derivative:", object$max_directional_derivative, "\n")
 
   invisible(object)
 }
@@ -62,7 +90,6 @@ plot.OptimalALT <- function(x, ...) {
 }
 
 
-utils::globalVariables(c("Stress level", "Directional derivative"))
 plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
   equi <- as.data.frame(equivalence_data)
   
