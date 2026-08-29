@@ -23,21 +23,23 @@ set_design_info <- function(k_levels, j_factor, n_unit, censor_time,
                             p, use_cond, sigma, 
                             x_l = 0, x_h = 1,
                             reparam = TRUE) {
-  
+    
   design_info_list <- list()
 
-  design_info_list$n_support = k_levels
-  design_info_list$n_factor = j_factor
-  design_info_list$n_unit = n_unit
-  design_info_list$censor_time = censor_time
-  design_info_list$sigma = sigma
-  design_info_list$p = p
-  design_info_list$use_cond = use_cond
-  design_info_list$reparam = reparam
-  design_info_list$x_l = x_l
-  design_info_list$x_h = x_h
+  design_info_list$n_support <- k_levels
+  design_info_list$n_factor <- j_factor
+  design_info_list$n_unit <- n_unit
+  design_info_list$censor_time <- censor_time
+  design_info_list$sigma <- sigma
+  design_info_list$p <- p
+  design_info_list$use_cond <- use_cond
+  design_info_list$reparam <- reparam
+  design_info_list$x_l <- x_l
+  design_info_list$x_h <- x_h
+  design_info_list$opt_type <- "C"
   
   class(design_info_list) <- "DesignInfo"
+  check_design_info(design_info_list)
   
   return(design_info_list)
 }
@@ -81,6 +83,7 @@ pso_setting <- function(n_swarm = 32, max_iter = 128,
     pso_info$vk <- vk
     
     class(pso_info) <- "PSOInfo"
+    check_pso_info(pso_info)
     
     return(pso_info)
 }
@@ -122,6 +125,7 @@ initialize_values <- function(init_swarm = NULL,
     initial_values$init_coef_mat <- init_coef_mat
     
     class(initial_values) <- "InitialValue"
+    check_init_values(initial_values)
     
     return(initial_values)
 }

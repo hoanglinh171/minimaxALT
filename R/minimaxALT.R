@@ -69,204 +69,143 @@ find_optimal_alt <- function(design_type, distribution,
                              verbose = TRUE,
                              seed = 42) {
   
-    stopifnot(inherits(design_info, "DesignInfo"))
-    stopifnot(inherits(pso_info, "PSOInfo"))
+    ## condition check
+    args <- mget(names(formals()))
+    do.call(check_minimax_alt_args, args)
     
-  ## Condition check
-  if (design_type == 1) {
-    stopifnot(!is.null(coef), design_info$n_factor == length(coef) - 1)
-    coef_upper = rep(10000, design_info$n_factor + 1)
-    coef_lower = rep(-10000, design_info$n_factor + 1)
-  } else if (design_type == 2) {
-    stopifnot(!is.null(coef_lower), !is.null(coef_upper), 
-              length(coef_upper) == length(coef_lower), 
-              design_info$n_factor == length(coef_lower) - 1)
-  } else {
-    stop("Design type must be 1 (locally optimal design) or 2 (minimax design)")
-  }
-  
-  stopifnot(distribution == 1 || distribution == 2 || distribution == 3)
-  
-  # stopifnot(design_info$opt_type == "C")
-  design_info$opt_type = "C"
-  
-  stopifnot(is.numeric(design_info$n_support), is.numeric(design_info$n_factor), 
-            is.numeric(design_info$n_unit), 
-            is.numeric(design_info$censor_time), is.numeric(design_info$sigma)
-            )
-  
-  stopifnot(design_info$p > 0, design_info$p <= 1)
-  
-  stopifnot(design_info$x_l >= 0, 
-            design_info$x_l < design_info$x_h, 
-            design_info$x_h <= 1)
-  
-  stopifnot(is.logical(design_info$reparam), is.logical(verbose))
-  
-  use_cond = c(design_info$use_cond)
-  stopifnot(design_info$n_factor == length(use_cond))
-  
-  max_cores = parallel::detectCores()
-  if (n_threads > 0.8 * max_cores) {
-    warning(sprintf(
-      "Number of threads available is %d. It is recommended to run with %d threads at most.",
-      max_cores,
-      round(0.8 * max_cores, digits = 0)
-    ))
     
-    n_threads = round(0.8 * max_cores, digits = 0)
-  }
+    ## number of threads
+    max_cores <- parallel::detectCores()
+    if (n_threads >= max_cores) {
+        
+        warning(sprintf("Number of threads available is %d, ", max_cores),
+                sprintf("Using %d threads instead.", max_cores))
+        
+        n_threads <-  round(max_cores, digits = 0)
+    }
+    
+    
+    ## seed
+    seed <- round(seed, digits = 0)
+    
+    
+    ## coef bounds for locally optimal design
+    if (design_type == "locally") {
+
+        coef_upper <- rep(10000, design_info$n_factor + 1)
+        coef_lower <- rep(-10000, design_info$n_factor + 1)
+    
+    }
+    
+    
+    ## bounds of swarm
+    x_l <- design_info$x_l
+    x_h <- design_info$x_h
+    n_support <- design_info$n_support
+    n_factor <- design_info$n_factor
+    
+    var_lower <- c(rep(x_l, n_support * n_factor), rep(0, n_support - 1))
+    var_upper <- c(rep(x_h, n_support * n_factor), rep(1, n_support - 1))
   
-  seed = round(seed, digits = 0)
-  
-  
-  ## Define design info
-  design_info$use_cond = use_cond
-  
-  ## Define bounds of swarm
-  x_l = design_info$x_l
-  x_h = design_info$x_h
-  n_support = design_info$n_support
-  n_factor = design_info$n_factor
-  
-  
-  var_lower <- c(rep(x_l, n_support * n_factor), rep(0, n_support - 1))
-  var_upper <- c(rep(x_h, n_support * n_factor), rep(1, n_support - 1))
-  
-  if (highest_level) {
-    var_lower[seq(1, n_support * n_factor, by = n_support)] <- x_h
-  }
+    if (highest_level) {
+        var_lower[seq(1, n_support * n_factor, by = n_support)] <- x_h
+    }
 
     
-  d_swarm = length(var_lower)
-  
-  
-  ## Get pso info
-  stopifnot(all(names(pso_info) == names(pso_setting())))
-  n_swarm <- pso_info$n_swarm
-  
-  
-  ## Get initial values
-  init_swarm = NULL
-  init_coef = NULL
-  init_local = NULL
-  init_coef_mat = NULL
-  
-  if (!is.null(init_values)) {
-
-    stopifnot(all(names(init_values) == names(initialize_values())))
+    ## particle size
+    d_swarm <- length(var_lower)
+    n_swarm <- pso_info$n_swarm
     
-    init_swarm = init_values$init_swarms
+    
+    ## bounds of nelder-mead
+    local_lower <- c(rep(design_info$x_l, 2), 0)
+    local_upper <- c(rep(design_info$x_h, 2), 1)
+  
+    
+    ## get initial values
+    init_coef <- NULL
+    init_swarm <- NULL
+    init_local <- NULL
+    init_coef_mat <- NULL
     
     if(!is.null(coef)) {
-      init_coef = coef
-    }
-    
-    init_local = init_values$init_local
-    init_coef_mat = init_values$init_coef_mat
-  } 
-  
-  
-  if (is.null(init_swarm)) {
-    init_swarm = matrix(runif(d_swarm * n_swarm), ncol = d_swarm)
-    init_swarm = init_swarm * matrix(rep(var_upper - var_lower, n_swarm), ncol = d_swarm, byrow = TRUE) + 
-      matrix(rep(var_lower, n_swarm), ncol = d_swarm, byrow = TRUE)
-  } else {
-    stopifnot(is.matrix(init_swarm),
-              ncol(init_swarm) == d_swarm,
-              nrow(init_swarm) == n_swarm,
-              all(is.finite(init_swarm))
-    )
-    
-    for (i in 1:nrow(init_swarm)) {
-      stopifnot(all(var_upper >= init_swarm[i,]), 
-                all(init_swarm[i,] >= var_lower)
-      )
-    }
-  }
-  
-  
-  if(is.null(init_coef)) {
-    if(is.null(coef)) {
-      init_coef = runif(n_factor + 1, min = -40, max = 40)
+        
+        init_coef <- coef
+        
     } else {
-      init_coef = coef
+        
+        init_coef <- runif(n_factor + 1, min = -40, max = 40)
     }
+    
+    if (!is.null(init_values)) {
+        
+        init_swarm <- init_values$init_swarms
+        init_local <- init_values$init_local
+        init_coef_mat <- init_values$init_coef_mat
+    
+    } 
+      
+    if (is.null(init_swarm)) {
+        
+        init_swarm <- matrix(runif(d_swarm * n_swarm), ncol = d_swarm)
+        init_swarm <- init_swarm * 
+            matrix(rep(var_upper - var_lower, n_swarm), ncol = d_swarm, byrow = TRUE) + 
+            matrix(rep(var_lower, n_swarm), ncol = d_swarm, byrow = TRUE)
+    
+    } 
 
-    
-  } else {
-    stopifnot(length(init_coef) == n_factor + 1, 
-              all(coef_upper >= init_coef), 
-              all(is.finite(init_coef)), 
-              all(init_coef >= coef_lower)
-    )
-  }
-  
-  
-  local_lower = c(rep(x_l, 2), 0)
-  local_upper = c(rep(x_h, 2), 1)
-  
-  if(is.null(init_local)) {
-    init_local = c(1, 0.6, 0.3)
-  } else {
-    stopifnot(length(local_lower) == length(init_local), 
-              all(local_upper >= init_local), 
-              all(is.finite(init_local)), 
-              all(init_local >= local_lower)
-    )
-  }
-  
-  
-  
-  
-  if(is.null(init_coef_mat)) {
-    init_coef_mat = 10 * as.matrix(expand.grid(rep(list(c(1, -1)), n_factor + 1)))
-    # init_coef_mat = rbind(init_coef_mat, 40 * as.matrix(expand.grid(rep(list(c(1, -1)), n_factor + 1))))
-  } else {
-    stopifnot(is.matrix(init_coef_mat),
-              ncol(init_coef_mat) == n_factor + 1,
-              all(is.finite(init_coef_mat))
-    )
-    
-    for(i in 1:nrow(init_coef_mat)) {
-      init_coef_mat[i, ] = get_outbound_sigmoid(init_coef_mat[i, ], coef_lower, coef_upper)
+    if(is.null(init_local)) {
+        
+        init_local <- c(1, 0.6, 0.3)
+        
     }
-  }
     
-  
-  
-  
-  ## Define pso info
-  pso_info$var_upper <- var_upper
-  pso_info$var_lower <- var_lower
-  pso_info$d_swarm <- d_swarm
-  pso_info$init_swarm <- t(init_swarm)
+    if(is.null(init_coef_mat)) {
+        
+        init_coef_mat <- 10 * as.matrix(expand.grid(rep(list(c(1, -1)), n_factor + 1)))
+        # init_coef_mat = rbind(init_coef_mat, 40 * as.matrix(expand.grid(rep(list(c(1, -1)), n_factor + 1))))
+        
+    } else {
+        
+        for(i in 1:nrow(init_coef_mat)) {
+            init_coef_mat[i, ] <- get_outbound_sigmoid(init_coef_mat[i, ], coef_lower, coef_upper)
+        }
+    }
+    
+    ## define pso info
+    pso_info$var_upper <- var_upper
+    pso_info$var_lower <- var_lower
+    pso_info$d_swarm <- d_swarm
+    pso_info$init_swarm <- t(init_swarm)
 
+    ## inner parameters
+    init_bound_info <- list()
+    init_bound_info$opt_coef <- init_coef
+    init_bound_info$coef_upper <- coef_upper
+    init_bound_info$coef_lower <- coef_lower
+    init_bound_info$init_coef <- init_coef
+    init_bound_info$opt_local <- init_local
+    init_bound_info$local_upper <- local_upper
+    init_bound_info$local_lower <- local_lower
+    init_bound_info$init_local <- init_local
+    init_bound_info$model <- ifelse(distribution == "weibull", 1, 
+                                    ifelse(distribution == "lognormal", 2, 3))
+    init_bound_info$opt_distribution <- init_bound_info$model
   
-  ## Inner parameters
-  init_bound_info <- list()
-  init_bound_info$opt_coef = init_coef
-  init_bound_info$coef_upper = coef_upper
-  init_bound_info$coef_lower = coef_lower
-  init_bound_info$init_coef = init_coef
-  init_bound_info$opt_local = init_local
-  init_bound_info$local_upper = local_upper
-  init_bound_info$local_lower = local_lower
-  init_bound_info$init_local = init_local
-  init_bound_info$model = distribution
-  init_bound_info$opt_distribution = distribution
-  
-  
-  nelder_mead_settings = list()
-  nelder_mead_settings$init_coef_mat = t(init_coef_mat)
-  
-
-  minimax_design <- minimax_alt(design_type, pso_info, design_info, init_bound_info,
+    # nelder-mean
+    nelder_mead_settings = list()
+    nelder_mead_settings$init_coef_mat = t(init_coef_mat)
+    
+    # run
+    design_type_code <- ifelse(design_type == "locally", 1, 2)
+    minimax_design <- minimax_alt(design_type_code, pso_info, design_info, init_bound_info,
                                 nelder_mead_settings,
                                 n_threads, verbose, seed)
 
   
-  class(minimax_design) <- "OptimalALT"
-  return(minimax_design)
+    class(minimax_design) <- "OptimalALT"
+  
+    return(minimax_design)
+
 }
 

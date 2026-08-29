@@ -28,6 +28,7 @@ print.DesignInfo <- function(object) {
     
     cat("ALT design specifications\n")
     cat("-----------------------------------------------\n")
+    cat("Optimality type: C-optimality\n")
     cat("Number of stress levels:", object$n_support, "\n")
     cat("Number of factors:", object$n_factor, "\n")
     cat("Number of testing units:", object$n_unit, "\n")
