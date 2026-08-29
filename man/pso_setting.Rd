@@ -39,7 +39,7 @@ pso_setting(
 \item{vk}{Numeric. Velocity clamping factor. Default value is 4.}
 }
 \value{
-A list of PSO hyperparameters.
+A PSOInfo object of PSO hyperparameters.
 }
 \description{
 Define hyperparameters for particle swarm optimization (PSO).
