@@ -7,7 +7,7 @@
 #' @param design_info A list containing design parameters such as factor levels, number of units, and other settings.
 #' @param seed Seed for reproducibility
 #'
-#' @return
+#' @return An OptimalityCheck object
 #' \describe{
 #' \item{max_directional_derivative}{Maximum directional derivative within design space.}
 #' \item{model_set}{The model set that is input.}
@@ -87,23 +87,21 @@ check_optimality <- function(best_design, model_set, design_info, seed = 42) {
 }
 
 
-#' @export
-print.OptimalityCheck <- function(object, show_candidates = FALSE) {
-    stopifnot(inherits(object, "OptimalityCheck"))
+#' Update optimality check for an OptimalALT object
+#'
+#' @param design An object of class `OptimalALT`
+#' @param check An object of class `OptimalityCheck`
+#' @return An `OptimalityALT` object with updated optimality check information
+#' @export 
+update_optimality_check <- function(design, check) {
+    stopifnot(inherits(design, "OptimalALT"))
+    stopifnot(inherits(check, "OptimalityCheck"))
     
-    model_num <- nrow(object$model_set)
-    colnames(object$model_set) <- c("coef_1", "coef_2", "distribution")
+    design$max_directional_derivative <- check$max_directional_derivative
+    design$model_set <- check$model_set
+    design$model_weight <- check$model_weight
+    design$equivalence_data <- check$equivalence_data
     
-    cat("Optimality check\n")
-    cat("-----------------------------------------------\n")
-    cat("Design: \n")
-    print(object$design)
-    cat("\n")
-    cat("Number of model candidates:", model_num,"\n")
-    if(show_candidates) {
-        print(object$model_set)
-        cat("\n")
-    }
-    cat("Max directional derivative:", object$max_directional_derivative, "\n")
+    return(design)
 }
 

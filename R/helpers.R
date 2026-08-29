@@ -1,3 +1,8 @@
+
+#### Transformation functions --------------------------------------------------
+
+## Transform coefficients by sigmoid function
+
 get_outbound_sigmoid <- function(coef_vec, coef_lower, coef_upper) {
   stopifnot(is.vector(coef_vec),
             all(is.finite(coef_vec)),
@@ -11,6 +16,8 @@ get_outbound_sigmoid <- function(coef_vec, coef_lower, coef_upper) {
   return(transform_sigmoid(coef_vec, coef_lower, coef_upper))
 }
 
+## Get proportion of designs
+
 get_proportion <- function(transform_prop) {
   stopifnot(is.vector(transform_prop),
             all(is.finite(transform_prop)),
@@ -20,6 +27,8 @@ get_proportion <- function(transform_prop) {
   
   return(transform_proportion(transform_prop))
 }
+
+## Get transformed proportion for PSO
 
 get_transform_prop <- function(prop) {
   stopifnot(is.vector(prop),
@@ -41,23 +50,3 @@ get_transform_prop <- function(prop) {
   return(transform_prop)
 }
 
-extract_design <- function(object) {
-    stopifnot(inherits(object, "OptimalALT"))
-    
-    n_factor <- length(object$coef_best) - 1
-    n_support <- (length(object$g_best) + 1) / (n_factor + 1)
-    
-    stress_levels <- matrix(object$g_best[1:(n_support*n_factor)], 
-                            ncol = n_support, byrow=TRUE)
-    
-    prop <- get_proportion(object$g_best[(n_support*n_factor + 1):length(object$g_best)])
-    
-    design <- rbind(stress_levels, prop)
-    
-    level_names <- paste0("X", 1:n_factor)
-    level_names <- c(level_names, "W")
-    rownames(design) <- level_names
-    
-    return(design)
-    
-}

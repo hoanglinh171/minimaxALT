@@ -42,26 +42,6 @@ set_design_info <- function(k_levels, j_factor, n_unit, censor_time,
   return(design_info_list)
 }
 
-#' @export
-print.DesignInfo <- function(object) {
-    stopifnot(inherits(object, "DesignInfo"))
-    
-    cat("ALT design specifications\n")
-    cat("-----------------------------------------------\n")
-    cat("Number of stress levels:", object$n_support, "\n")
-    cat("Number of factors:", object$n_factor, "\n")
-    cat("Number of testing units:", object$n_unit, "\n")
-    cat("Censoring time:", object$censor_time, "\n")
-    cat("Stress level at the use condition:", 
-        paste0("(", paste(object$use_cond, collapse = ", "), ")"), "\n")
-    cat("Stress range: [", object$x_l, ", ", object$x_h, "]\n", sep = "")
-    cat("Lifetime percentile to be estimated at the use condition:", object$p, "\n")
-    cat("Coefficients are reparameterized into failure probability?", object$reparam, "\n")
-    cat("Scale parameter:", object$sigma, "\n")
-    cat("\n")
-}
-
-
 
 #' Set PSO Optimization Settings
 #'
@@ -105,25 +85,6 @@ pso_setting <- function(n_swarm = 32, max_iter = 128,
     return(pso_info)
 }
 
-#' @export
-print.PSOInfo <- function(object) {
-    stopifnot(inherits(object, "PSOInfo"))
-    
-    cat("PSO Hyperparameters\n")
-    cat("-----------------------------------------------\n")
-    cat("Number of particles:", object$n_swarm, "\n")
-    cat("Maximum number of iterations:", object$max_iter, "\n")
-    cat("Frequency of checking optimality:", object$early_stopping, "iterations\n")
-    cat("Convergence tolerance:", object$tol, "\n")
-    cat("Cognitive acceleration coefficient c1:", object$c1, "\n")
-    cat("Social acceleration coefficient c2:", object$c2, "\n")
-    cat("Starting inertia weight w0:", object$w0, "\n")
-    cat("Ending inertia weight w1:", object$w1, "\n")
-    cat("Inertia weight decay fraction:", object$w_var, "\n")
-    cat("Velocity clamping factor:", object$vk, "\n")
-    cat("\n")
-    
-}
 
 #' Initialize Particle Swarm Optimization and Nelder-Mead Algorithm Values
 #'
@@ -163,20 +124,5 @@ initialize_values <- function(init_swarm = NULL,
     class(initial_values) <- "InitialValue"
     
     return(initial_values)
-}
-
-#' @export
-print.InitialValue <- function(object) {
-    stopifnot(inherits(object, "InitialValue"))
-    
-    cat("Initialized Values for PSO and Nelder-Mead Optimization\n")
-    cat("-----------------------------------------------\n")
-    cat("Number of initial particles for PSO:", nrow(object$init_swarm), "\n")
-    cat("Particle size of PSO:", ncol(object$init_swarm), "\n")
-    cat("Initial value (design) for Nelder-Mead optimization:", 
-        paste0("(", paste(object$init_local, collapse = ", "), ")"), "\n")
-    cat("Multi-start Nelder-Mead optimization:", nrow(object$init_coef), "times\n")
-    cat("\n")
-    
 }
 
