@@ -12,7 +12,7 @@
 #' @param x_l Numeric. Lower bound of stress range. Default is 0.
 #' @param x_h Numeric. Upper bound of stress range. Default is 1.
 #' @param reparam Logical. Whether reparameterization is applied to model parameters. Reparameterization is supported for all design types, while non-reparameterization is only available for locally optimal design \code{design_type = 1}. Default is TRUE.
-#' @return A list of design specifications
+#' @return A DesignInfo object of design specifications
 #' @examples
 #' design_info <- set_design_info(k_levels=3, j_factor=1, n_unit=300, 
 #'                            censor_time=183, p=0.1, use_cond=c(0), sigma=0.6)
@@ -37,7 +37,28 @@ set_design_info <- function(k_levels, j_factor, n_unit, censor_time,
   design_info_list$x_l = x_l
   design_info_list$x_h = x_h
   
+  class(design_info_list) <- "DesignInfo"
+  
   return(design_info_list)
+}
+
+#' @export
+print.DesignInfo <- function(object) {
+    stopifnot(inherits(object, "DesignInfo"))
+    
+    cat("ALT design specifications\n")
+    cat("-----------------------------------------------\n")
+    cat("Number of stress levels:", object$n_support, "\n")
+    cat("Number of factors:", object$n_factor, "\n")
+    cat("Number of testing units:", object$n_unit, "\n")
+    cat("Censoring time:", object$censor_time, "\n")
+    cat("Stress level at the use condition:", 
+        paste0("(", paste(object$use_cond, collapse = ", "), ")"), "\n")
+    cat("Stress range: [", object$x_l, ", ", object$x_h, "]\n", sep = "")
+    cat("Lifetime percentile to be estimated at the use condition:", object$p, "\n")
+    cat("Coefficients are reparameterized into failure probability?", object$reparam, "\n")
+    cat("Scale parameter:", object$sigma, "\n")
+    cat("\n")
 }
 
 
@@ -56,7 +77,7 @@ set_design_info <- function(k_levels, j_factor, n_unit, censor_time,
 #' @param w1 Numeric. Ending inertia weight. Default value is 0.2.
 #' @param w_var Numeric. A number between \eqn{[0, 1]} that controls the percentage of iterations during which PSO linearly decrease inertia weight from \code{w0} to \code{w1}. Default value is 0.8.
 #' @param vk Numeric. Velocity clamping factor. Default value is 4.
-#' @return A list of PSO hyperparameters.
+#' @return A PSOInfo object of PSO hyperparameters.
 #' @examples
 #' pso_info <- pso_setting(n_swarm=32, max_iter=128, early_stopping=10, tol=0.01)
 #' @name pso_setting
@@ -65,22 +86,53 @@ set_design_info <- function(k_levels, j_factor, n_unit, censor_time,
 pso_setting <- function(n_swarm = 32, max_iter = 128,
                         early_stopping = 10, tol = 0.01, c1 = 2.05, c2 = 2.05,
                         w0 = 1.2, w1 = 0.2, w_var = 0.8, vk = 4) {
-  list(
-    n_swarm = n_swarm, max_iter = max_iter, 
-    early_stopping = early_stopping, tol = tol, c1 = c1, c2 = c2, w0 = w0, w1 = w1, w_var = w_var,
-    vk = vk
-  )
+    
+    pso_info <- list()
+    
+    pso_info$n_swarm <- n_swarm
+    pso_info$max_iter <- max_iter 
+    pso_info$early_stopping <- early_stopping
+    pso_info$tol <- tol
+    pso_info$c1 <- c1
+    pso_info$c2 <- c2
+    pso_info$w0 <- w0
+    pso_info$w1 <- w1
+    pso_info$w_var <- w_var
+    pso_info$vk <- vk
+    
+    class(pso_info) <- "PSOInfo"
+    
+    return(pso_info)
 }
 
+#' @export
+print.PSOInfo <- function(object) {
+    stopifnot(inherits(object, "PSOInfo"))
+    
+    cat("PSO Hyperparameters\n")
+    cat("-----------------------------------------------\n")
+    cat("Number of particles:", object$n_swarm, "\n")
+    cat("Maximum number of iterations:", object$max_iter, "\n")
+    cat("Frequency of checking optimality:", object$early_stopping, "iterations\n")
+    cat("Convergence tolerance:", object$tol, "\n")
+    cat("Cognitive acceleration coefficient c1:", object$c1, "\n")
+    cat("Social acceleration coefficient c2:", object$c2, "\n")
+    cat("Starting inertia weight w0:", object$w0, "\n")
+    cat("Ending inertia weight w1:", object$w1, "\n")
+    cat("Inertia weight decay fraction:", object$w_var, "\n")
+    cat("Velocity clamping factor:", object$vk, "\n")
+    cat("\n")
+    
+}
 
 #' Initialize Particle Swarm Optimization and Nelder-Mead Algorithm Values
 #'
 #' Sets initial particles for PSO, initial locally optimal design, and initial parameters for Nelder-Mead algorithm.
 #'
 #' @param init_swarm Optional matrix of initial particle positions. If not defined, particle positions are randomly generated using \code{runif} with pre-determined number of particles \code{n_swarm} and particle size.
-#' @param init_local Optional vector of initial locally optimal design. If not defined, the initial vector representing locally optimal design is \code{c(1, 0.6, 0.3)}. 
+#' @param init_local Optional vector of initial locally optimal design for Nelder-Mead optimization. If not defined, the initial vector representing locally optimal design is \code{c(1, 0.6, 0.3)}. 
 #' @param init_coef_mat Optional matrix of initial parameters to implement multi-start Nelder-Mead algorithm. The number of rows is the number of starts, and each row is the corresponding initial parameters. If not defined, the initial matrix of parameters is generated by sigmoid transformation of \code{10 * as.matrix(expand.grid(rep(list(c(1, -1)), j_factor + 1)))}.
-#' @return A list of initialized values.
+#' @return An InitialValue object of initialized values.
 #' @examples
 #' init_local <- c(1, 0.6, 0.3)
 #' 
@@ -102,8 +154,29 @@ pso_setting <- function(n_swarm = 32, max_iter = 128,
 #' @export
 initialize_values <- function(init_swarm = NULL,
                               init_local = NULL, init_coef_mat = NULL) {
-  list(
-    init_swarm = init_swarm, 
-    init_local = init_local, init_coef_mat = init_coef_mat
-  )
+    initial_values <- list()
+    
+    initial_values$init_swarm <- init_swarm
+    initial_values$init_local <- init_local
+    initial_values$init_coef_mat <- init_coef_mat
+    
+    class(initial_values) <- "InitialValue"
+    
+    return(initial_values)
 }
+
+#' @export
+print.InitialValue <- function(object) {
+    stopifnot(inherits(object, "InitialValue"))
+    
+    cat("Initialized Values for PSO and Nelder-Mead Optimization\n")
+    cat("-----------------------------------------------\n")
+    cat("Number of initial particles for PSO:", nrow(object$init_swarm), "\n")
+    cat("Particle size of PSO:", ncol(object$init_swarm), "\n")
+    cat("Initial value (design) for Nelder-Mead optimization:", 
+        paste0("(", paste(object$init_local, collapse = ", "), ")"), "\n")
+    cat("Multi-start Nelder-Mead optimization:", nrow(object$init_coef), "times\n")
+    cat("\n")
+    
+}
+

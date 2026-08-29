@@ -4,12 +4,12 @@
 #'
 #' @param design_type Integer. 1: Locally optimal design, 2: Minimax design.
 #' @param distribution Integer. The assumed failure time distribution, 1: Weibull, 2: Log-normal, 3: Model robust (both distribution Weibull and Log-normal).
-#' @param design_info A list from `set_design_info()` containing design specifications.
-#' @param pso_info A list from `pso_setting()` defining PSO hyperparameters.
+#' @param design_info A DesignInfo object from `set_design_info()` containing design specifications.
+#' @param pso_info A PSOInfo object from `pso_setting()` defining PSO hyperparameters.
 #' @param coef Optional. Fixed model coefficients. Required if \code{design_type = 1}.
 #' @param coef_lower Optional. Lower bounds for model parameters. Required if \code{design_type = 2}.
 #' @param coef_upper Optional. Upper bounds for model parameters. Required if \code{design_type = 2}.
-#' @param init_values Optional. A list of initial values from `initialize_values()`.
+#' @param init_values Optional. An InitialValue object of initial values from `initialize_values()`.
 #' @param highest_level Logical. Whether the highest stress level of the generated design is the upper bound of stress range \code{x_h}. Default value is \code{TRUE}.
 #' @param n_threads Integer. Number of threads for parallel processing.
 #' @param verbose Logical. If \code{TRUE}, print optimization progress.
@@ -69,7 +69,9 @@ find_optimal_alt <- function(design_type, distribution,
                              verbose = TRUE,
                              seed = 42) {
   
-  
+    stopifnot(inherits(design_info, "DesignInfo"))
+    stopifnot(inherits(pso_info, "PSOInfo"))
+    
   ## Condition check
   if (design_type == 1) {
     stopifnot(!is.null(coef), design_info$n_factor == length(coef) - 1)

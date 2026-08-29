@@ -39,7 +39,7 @@ set_design_info(
 \item{reparam}{Logical. Whether reparameterization is applied to model parameters. Reparameterization is supported for all design types, while non-reparameterization is only available for locally optimal design \code{design_type = 1}. Default is TRUE.}
 }
 \value{
-A list of design specifications
+A DesignInfo object of design specifications
 }
 \description{
 Configures the settings for an accelerated life test.

@@ -2,8 +2,11 @@
 
 S3method(extract,OptimalALT)
 S3method(plot,OptimalALT)
+S3method(print,DesignInfo)
+S3method(print,InitialValue)
 S3method(print,OptimalALT)
 S3method(print,OptimalityCheck)
+S3method(print,PSOInfo)
 S3method(summary,OptimalALT)
 S3method(update_optimality_check,OptimalALT)
 export(check_optimality)

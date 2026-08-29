@@ -24,9 +24,9 @@ find_optimal_alt(
 
 \item{distribution}{Integer. The assumed failure time distribution, 1: Weibull, 2: Log-normal, 3: Model robust (both distribution Weibull and Log-normal).}
 
-\item{design_info}{A list from `set_design_info()` containing design specifications.}
+\item{design_info}{A DesignInfo object from `set_design_info()` containing design specifications.}
 
-\item{pso_info}{A list from `pso_setting()` defining PSO hyperparameters.}
+\item{pso_info}{A PSOInfo object from `pso_setting()` defining PSO hyperparameters.}
 
 \item{coef}{Optional. Fixed model coefficients. Required if \code{design_type = 1}.}
 
@@ -34,7 +34,7 @@ find_optimal_alt(
 
 \item{coef_upper}{Optional. Upper bounds for model parameters. Required if \code{design_type = 2}.}
 
-\item{init_values}{Optional. A list of initial values from `initialize_values()`.}
+\item{init_values}{Optional. An InitialValue object of initial values from `initialize_values()`.}
 
 \item{highest_level}{Logical. Whether the highest stress level of the generated design is the upper bound of stress range \code{x_h}. Default value is \code{TRUE}.}
 

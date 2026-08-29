@@ -44,6 +44,7 @@ print.OptimalALT <- function(object, ...) {
     cat("-----------------------------------------------\n")
     cat("Number of model candidates:", model_num,"\n")
     cat("Max directional derivative:", object$max_directional_derivative, "\n")
+    cat("\n")
     
     invisible(object)
 }
@@ -62,7 +63,8 @@ summary.OptimalALT <- function(object, ...) {
   print(design)
   cat("\nObjective Value:", object$fg_best, "\n")
   cat("Max directional derivative:", object$max_directional_derivative, "\n")
-
+  cat("\n")
+  
   invisible(object)
 }
 
