@@ -360,12 +360,20 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
 
         /* -- FINISH PSO LOOP -- */
     } catch (...) {
+        
         Rcpp::Rcout << "###### Interrupted by user ######" << std::endl;
-        Rcpp::Rcout << "Objective value: " << fg_best << std::endl;
-        Rcpp::Rcout << "Levels:" << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t() << std::endl;
-        Rcpp::Rcout << "Proportion:" << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t() << std::endl;
-        Rcpp::Rcout << "Distribution: " << distribution_best << std::endl;
-        Rcpp::Rcout << "Parameters:" << coef_best.t() << std::endl;
+        Rcpp::Rcout << "Objective:    " << fg_best << std::endl;
+        Rcpp::Rcout << "Levels:       " << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t();
+        Rcpp::Rcout << "Proportion:   " << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t();
+        Rcpp::Rcout << "Parameters:   " << coef_best.t();
+        
+        std::string distribution_name =
+            (distribution_best == 1) ? "Weibull" :
+            (distribution_best == 2) ? "Log-normal" : "Unknown";
+        Rcpp::Rcout << "  Distribution:     " << distribution_name << "\n";
+        
+        Rcpp::Rcout << "\n";
+        
     }
 
     /* -- OUTPUT -- */

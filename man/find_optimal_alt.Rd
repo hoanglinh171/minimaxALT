@@ -13,7 +13,7 @@ find_optimal_alt(
   coef_lower = NULL,
   coef_upper = NULL,
   init_values = NULL,
-  highest_level = TRUE,
+  highest_level = FALSE,
   n_threads = 1,
   verbose = TRUE,
   seed = 42

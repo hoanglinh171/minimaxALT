@@ -42,48 +42,52 @@
 #' @importFrom Rcpp evalCpp cppFunction sourceCpp
 #' @export
 check_optimality <- function(best_design, model_set, design_info, seed = 42) {
-  
-  # transform design into particle
-  stopifnot(is.matrix(best_design))
-  j <- nrow(best_design)
-  k <- ncol(best_design)
-  stopifnot(design_info$n_factor == j - 1)
-  stopifnot(design_info$n_support == k)
-  stopifnot(all(best_design[j,] >= 0),
-            all(best_design[j,] <= 1)
-            )
-  stopifnot(sum(best_design[j,]) == 1)
-  
-  transform_prop <- get_transform_prop(best_design[j,])
-  best_particle <- c(t(best_design[1:j-1, 1:k]))
-  best_particle <- c(best_particle, transform_prop)
-  
-  stopifnot(is.numeric(design_info$n_support), is.numeric(design_info$n_factor), 
-            is.numeric(design_info$n_unit), 
-            is.numeric(design_info$censor_time), is.numeric(design_info$sigma), 
-            is.numeric(design_info$p), 
-            is.numeric(design_info$x_l), is.numeric(design_info$x_h))
-  
-  stopifnot(is.logical(design_info$reparam))
-  
-  use_cond = c(design_info$use_cond)
-  stopifnot(design_info$n_factor == length(use_cond))
-  
-  stopifnot(is.matrix(model_set))
-  
-  seed = round(seed, digits = 0)
-  
-  ## Define design info
-  design_info$use_cond = use_cond
-  # stopifnot(design_info$opt_type == "C")
-  design_info$opt_type = "C"
-  
-  optimality <- equivalence_theorem(best_particle, design_info, model_set, seed)
-  optimality$design <- best_design
-  
-  class(optimality) <- "OptimalityCheck"
-  
-  return(optimality)
+    
+    # check design_info
+    if (!inherits(design_info, "DesignInfo")) {
+        stop("`design_info` must be a `DesignInfo` object.")
+    }
+    
+    
+    # check best_design
+    check_design_measure(best_design, design_info)
+    
+    
+    # check model_set
+    check_model_set(model_set, design_info)
+    
+    
+    # transform design into particle
+    j <- nrow(best_design)
+    k <- ncol(best_design)
+    transform_prop <- get_transform_prop(best_design[j,])
+    best_particle <- c(t(best_design[1:j-1, 1:k]))
+    best_particle <- c(best_particle, transform_prop)
+    
+    
+    # coding distribution
+    model_set_code <- model_set
+    dist_vec <- model_set[, ncol(model_set)]
+    model_set_code[, ncol(model_set_code)] <- ifelse(dist_vec == "weibull", 1, 
+                                                     ifelse(dist_vec == "lognormal", 2, 3))
+    model_set_code <- matrix(
+        as.numeric(model_set_code),
+        nrow = nrow(model_set_code)
+    )
+    
+    
+    ## seed
+    seed <- round(seed, digits = 0)
+    set.seed(seed)
+    
+    
+    ## run
+    optimality <- equivalence_theorem(best_particle, design_info, model_set_code, seed)
+    optimality$design <- best_design
+    
+    class(optimality) <- "OptimalityCheck"
+    
+    return(optimality)
 }
 
 

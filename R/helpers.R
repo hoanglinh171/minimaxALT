@@ -3,6 +3,7 @@
 ## Transform coefficients by sigmoid function
 
 get_outbound_sigmoid <- function(coef_vec, coef_lower, coef_upper) {
+    
   stopifnot(is.vector(coef_vec),
             all(is.finite(coef_vec)),
             all(is.finite(coef_lower)),
@@ -18,6 +19,7 @@ get_outbound_sigmoid <- function(coef_vec, coef_lower, coef_upper) {
 ## Get proportion of designs
 
 get_proportion <- function(transform_prop) {
+    
   stopifnot(is.vector(transform_prop),
             all(is.finite(transform_prop)),
             all(transform_prop >= 0),
@@ -494,13 +496,8 @@ check_minimax_alt_args <- function(
             var_lower <- c(rep(design_info$x_l, design_info$n_support * design_info$n_factor), 
                            rep(0, design_info$n_support - 1))
             
-            var_upper <- c(rep(design_info$x_h, design_info$n_support * desig_info$n_factor), 
+            var_upper <- c(rep(design_info$x_h, design_info$n_support * design_info$n_factor), 
                            rep(1, design_info$n_support - 1))
-            
-            if (highest_level) {
-                var_lower[seq(1, design_info$n_support * design_info$n_factor, 
-                              by = design_info$n_support)] <- design_info$x_h
-            }
             
             if (nrow(init_values$init_swarm) != pso_info$n_swarm) {
                 stop(
@@ -518,9 +515,11 @@ check_minimax_alt_args <- function(
             
             for (i in 1:nrow(init_values$init_swarm)) {
                 
-                if (any(var_upper < init_swarm[i,]) || 
-                    any(init_swarm[i,] < var_lower)) {
+                if (any(var_upper < init_values$init_swarm[i,]) || 
+                    any(init_values$init_swarm[i,] < var_lower)) {
                     
+                    print(var_upper)
+                    print(var_lower)
                     stop("Initial particle ", i,
                         " contains values outside the specified bounds.")
                 }
@@ -541,7 +540,7 @@ check_minimax_alt_args <- function(
         
         if (!is.null(init_values$init_coef_mat)) {
             
-            if (ncol(is.null(init_values$init_coef_mat) != design_info$n_factor + 1)) {
+            if (ncol(init_values$init_coef_mat) != design_info$n_factor + 1) {
                 stop(
                     "`init_coef_mat` must have ", design_info$n_factor + 1,
                     " columns."
@@ -554,4 +553,91 @@ check_minimax_alt_args <- function(
     invisible(TRUE)
 }
 
+
+check_design_measure <- function(best_design, design_info) {
+    
+    if (!inherits(design_info, "DesignInfo")) {
+        stop("`design_info` must be a `DesignInfo` object.")
+    }
+    
+    if (!is.matrix(best_design)) {
+        stop("`best_design` must be a matrix.")
+    }
+    
+    if (design_info$n_factor != nrow(best_design) - 1) {
+        stop(
+            "`best_design` has ", nrow(best_design) - 1,
+            " stress factors, but `j_factor` is ",
+            design_info$n_factor, "."
+        )
+    }
+    
+    if (design_info$n_support != ncol(best_design)) {
+        stop(
+            "`best_design` has ", ncol(best_design),
+            " levels, but `k_levels` is ",
+            design_info$n_support, "."
+        )
+    }
+    
+    if (any(best_design[nrow(best_design), ] < 0) ||
+        any(best_design[nrow(best_design), ] > 1)) {
+        stop(
+            "The proportions of `best_design` must be between 0 and 1."
+        )
+    }
+    
+    if (!isTRUE(all.equal(sum(best_design[nrow(best_design), ]), 1))) {
+        stop(
+            "The proportions of `best_design` must sum to 1."
+        )
+    }
+    
+    invisible(TRUE)
+}
+
+
+check_model_set <- function(model_set, design_info) {
+    
+    if (!inherits(design_info, "DesignInfo")) {
+        stop("`design_info` must be a `DesignInfo` object.")
+    }
+    
+    if (!is.matrix(model_set)) {
+        stop("`model_sel` must be a matrix.")
+    }
+    
+    if (nrow(model_set) < 1) {
+        stop("`init_coef_mat` must have at least one row.")
+    }
+    
+    
+    # coefficients
+    coef_mat <- matrix(
+        as.numeric(model_set[, 1:(ncol(model_set) - 1)]),
+        nrow = nrow(model_set[, 1:(ncol(model_set) - 1)])
+    )
+    
+    if (any(!is.finite(coef_mat))) {
+        stop("Coefficients of `model_set` must contain only finite values.")
+    }
+
+    if (ncol(coef_mat) != design_info$n_factor + 1) {
+        stop(
+            "Coefficients of `model_set` must have ", design_info$n_factor + 1,
+            " columns."
+        )
+    }
+    
+    
+    # distribution
+    dist_vec <- model_set[, ncol(model_set)]
+    
+    if (!all(dist_vec %in% c("weibull", "lognormal"))) {
+        stop("`distribution` must be `weibull` or `lognormal`.")
+    }
+    
+    invisible(TRUE)
+    
+}
 

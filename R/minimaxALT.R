@@ -64,7 +64,7 @@ find_optimal_alt <- function(design_type, distribution,
                              coef = NULL,
                              coef_lower = NULL, coef_upper = NULL,
                              init_values = NULL,
-                             highest_level = TRUE,
+                             highest_level = FALSE,
                              n_threads = 1,
                              verbose = TRUE,
                              seed = 42) {
@@ -90,7 +90,7 @@ find_optimal_alt <- function(design_type, distribution,
     set.seed(seed)
     
     
-    ## coef bounds for locally optimal design
+    ## coef pseudo-bounds for locally optimal design
     if (design_type == "locally") {
 
         coef_upper <- rep(10000, design_info$n_factor + 1)
