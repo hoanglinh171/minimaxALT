@@ -80,7 +80,7 @@ pso_info <- pso_setting(
 
 res <- find_optimal_alt(
     design_type="minimax", 
-    distribution="weibull", 
+    distribution="lognormal", 
     design_info=design_info, 
     pso_info=pso_info, 
     coef_lower=c(10^-6, 0.7),
