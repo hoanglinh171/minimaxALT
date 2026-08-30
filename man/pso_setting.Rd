@@ -22,9 +22,13 @@ pso_setting(
 
 \item{max_iter}{Integer. Maximum number of iterations.}
 
-\item{early_stopping}{Integer. The frequency, i.e. number of iterations, of validating the design optimality using equivalence theorem. The optimization process stops once maximum directional derivative is approximately 1.}
+\item{early_stopping}{Integer. The frequency, i.e. number of iterations, 
+of validating the design optimality using equivalence theorem. 
+The optimization process stops once maximum directional derivative is 
+approximately 1.}
 
-\item{tol}{Numeric. Convergence tolerance. The algorithm stops if \code{abs(max_directional_derivative - 1) < tol}.}
+\item{tol}{Numeric. Convergence tolerance. The algorithm stops if 
+\code{abs(max_directional_derivative - 1) < tol}.}
 
 \item{c1}{Numeric. Cognitive acceleration coefficient. Default value is 2.05.}
 
@@ -34,16 +38,19 @@ pso_setting(
 
 \item{w1}{Numeric. Ending inertia weight. Default value is 0.2.}
 
-\item{w_var}{Numeric. A number between \eqn{[0, 1]} that controls the percentage of iterations during which PSO linearly decrease inertia weight from \code{w0} to \code{w1}. Default value is 0.8.}
+\item{w_var}{Numeric. A number between \eqn{[0, 1]} that controls the 
+percentage of iterations during which PSO linearly decrease inertia
+ weight from \code{w0} to \code{w1}. Default value is 0.8.}
 
 \item{vk}{Numeric. Velocity clamping factor. Default value is 4.}
 }
 \value{
-A PSOInfo object of PSO hyperparameters.
+A `PSOInfo` object of PSO hyperparameters.
 }
 \description{
 Define hyperparameters for particle swarm optimization (PSO).
 }
 \examples{
 pso_info <- pso_setting(n_swarm=32, max_iter=128, early_stopping=10, tol=0.01)
+
 }

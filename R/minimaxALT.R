@@ -2,46 +2,62 @@
 #'
 #' Runs hybrid algorithm combining PSO and Nelder-Mead to find the optimal design of accelerated life test (ALT).
 #'
-#' @param design_type Integer. 1: Locally optimal design, 2: Minimax design.
-#' @param distribution Integer. The assumed failure time distribution, 1: Weibull, 2: Log-normal, 3: Model robust (both distribution Weibull and Log-normal).
-#' @param design_info A DesignInfo object from `set_design_info()` containing design specifications.
-#' @param pso_info A PSOInfo object from `pso_setting()` defining PSO hyperparameters.
-#' @param coef Optional. Fixed model coefficients. Required if \code{design_type = 1}.
-#' @param coef_lower Optional. Lower bounds for model parameters. Required if \code{design_type = 2}.
-#' @param coef_upper Optional. Upper bounds for model parameters. Required if \code{design_type = 2}.
-#' @param init_values Optional. An InitialValue object of initial values from `initialize_values()`.
-#' @param highest_level Logical. Whether the highest stress level of the generated design is the upper bound of stress range \code{x_h}. Default value is \code{TRUE}.
+#' @param design_type Character. One of c("locally", "minimax").
+#' @param distribution Character. Failure distribution, one of 
+#'  c("weibull, "lognormal").
+#' @param design_info A `DesignInfo` object from \code{\link{set_design_info}} containing 
+#'  design specifications.
+#' @param pso_info A `PSOInfo` object from \code{\link{pso_setting}} defining 
+#'  PSO hyperparameters.
+#' @param coef Optional. Fixed model coefficients. 
+#'  Required if \code{design_type = "locally"}.
+#' @param coef_lower Optional. Lower bounds for model parameters. 
+#'  Required if \code{design_type = "minimax"}.
+#' @param coef_upper Optional. Upper bounds for model parameters. 
+#'  Required if \code{design_type = "minimax"}.
+#' @param init_values Optional. An `InitialValue` object of initial values 
+#'  from \code{\link{initialize_values}}.
+#' @param highest_level Logical. Whether the highest stress level of the 
+#'  generated design is the upper bound of stress range \code{x_h}. 
+#'  Default value is \code{FALSE}.
 #' @param n_threads Integer. Number of threads for parallel processing.
 #' @param verbose Logical. If \code{TRUE}, print optimization progress.
 #' @param seed Integer. Seed for reproducibility
-#' @return
-#' \describe{
-#' \item{g_best}{The global best design found by the hybrid algorithm.}
-#' \item{coef_best}{The parameters corresponding to the global best design.}
-#' \item{distribution_best}{The distribution corresponding to the global best design.}
-#' \item{max_directional_derivative}{Maximum directional derivative within design space, evaluated using equivalence theorem.}
-#' \item{fg_best}{The objective function value corresponding to the global best design.}
-#' \item{fg_best_hist}{A vector tracking the best objective function value of each iteration.}
-#' \item{p_best}{A matrix containing each particle's personal best design found during the optimization.}
-#' \item{fp_best}{A vector containing the objective function values corresponding to each particle's personal best.}
-#' \item{g_hist}{All particle positions of each iteration.}
-#' \item{coef_best_hist}{The parameters corresponding to the global best designs of each iteration.}
-#' \item{distribution_best_hist}{The distribution corresponding to the global best designs of each iteration.}
-#' \item{model_set}{A matrix containing distribution and model parameters of global best particles of each iteration, duplicated models are removed.}
-#' \item{model_weight}{The weight assigned to each model in the model set.}
-#' \item{equivalence_data}{Generated designs and their corresponding directional derivative given the optimal design \code{g_best}. Each design is a combination of factors with value in [0, 1]. These designs are data for plotting equivalence theorem plot.}
-#' }
+#' 
+#' @return An object of class OptimalALT
+#' 
 #' @examples
 #' 
-#' design_info <- set_design_info(k_levels=2, j_factor=1, n_unit=300, 
-#'                                censor_time=183, p=0.1, use_cond=0, sigma=0.6)
+#' design_info <- set_design_info(
+#'     k_levels=3, 
+#'     j_factor=1, 
+#'     n_unit=300, 
+#'     censor_time=183, 
+#'     p=0.1, 
+#'     use_cond=0, 
+#'     sigma=0.6
+#' )
 #' 
-#' pso_info <- pso_setting(n_swarm=32, max_iter=128, early_stopping=10, tol=0.01)
+#' pso_info <- pso_setting(
+#'     n_swarm=5, 
+#'     max_iter=10, 
+#'     early_stopping=5, 
+#'     tol=0.00001
+#' )
 #' 
-#' set.seed(42)
-#' res <- find_optimal_alt(design_type=1, distribution=1, design_info=design_info, 
-#'                         pso_info=pso_info, coef=c(0.001, 0.9), verbose = FALSE)
+#' res <- find_optimal_alt(
+#'     design_type="minimax", 
+#'     distribution="lognormal", 
+#'     design_info=design_info, 
+#'     pso_info=pso_info, 
+#'     coef_lower=c(10^-6, 0.7),
+#'     coef_upper=c(10^-3, 0.99), 
+#'     highest_level = TRUE,
+#'     verbose = FALSE,
+#'     n_threads = 1
+#' )
 #' 
+#' print(res)
 #' summary(res)
 #' plot(res, x_l=0, x_h=1)
 #' 
@@ -53,18 +69,14 @@
 #'   \item Meeker, W. Q., & Escobar, L. A. (1998). Statistical methods for reliability data. New York: Wiley-Interscience.
 #'   \item Nelder, J. A. and Mead, R. (1965). A simplex algorithm for function minimization. Computer Journal, 7, 308--313. 10.1093/comjnl/7.4.308.
 #' }
-#' @name find_optimal_alt
-#' @rdname find_optimal_alt
-#' @importFrom Rcpp evalCpp cppFunction sourceCpp
-#' @importFrom parallel detectCores
-#' @importFrom stats runif
+#' 
 #' @export
 find_optimal_alt <- function(design_type, distribution,
                              design_info, pso_info,
                              coef = NULL,
                              coef_lower = NULL, coef_upper = NULL,
                              init_values = NULL,
-                             highest_level = TRUE,
+                             highest_level = FALSE,
                              n_threads = 1,
                              verbose = TRUE,
                              seed = 42) {
@@ -87,9 +99,10 @@ find_optimal_alt <- function(design_type, distribution,
     
     ## seed
     seed <- round(seed, digits = 0)
+    set.seed(seed)
     
     
-    ## coef bounds for locally optimal design
+    ## coef pseudo-bounds for locally optimal design
     if (design_type == "locally") {
 
         coef_upper <- rep(10000, design_info$n_factor + 1)
@@ -129,11 +142,8 @@ find_optimal_alt <- function(design_type, distribution,
     init_coef_mat <- NULL
     
     if(!is.null(coef)) {
-        
         init_coef <- coef
-        
     } else {
-        
         init_coef <- runif(n_factor + 1, min = -40, max = 40)
     }
     
@@ -155,9 +165,7 @@ find_optimal_alt <- function(design_type, distribution,
     } 
 
     if(is.null(init_local)) {
-        
         init_local <- c(1, 0.6, 0.3)
-        
     }
     
     if(is.null(init_coef_mat)) {

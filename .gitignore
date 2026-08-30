@@ -54,3 +54,6 @@ rsconnect/
 # cpp compiling files
 *.o
 *.so
+inst/doc
+/doc/
+/Meta/

@@ -253,12 +253,7 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
 
             auto start = std::chrono::high_resolution_clock::now();
 
-            if (t == 0)  Rcpp::Rcout << "PSO Loop: Updating ..    " << std::endl;
-            if (verbose) {
-                Rcpp::Rcout << "Processing: " << t + 1 << "/" << max_iter << std::endl;
-                Rcpp::Rcout << "-------------------------------------------------------------------------------" << std::endl;
-            }
-            if (t == (max_iter - 1)) Rcpp::Rcout << std::endl;
+            if (t == 0)  Rcpp::Rcout << "PSO Loop: Updating ... " << std::endl;
 
             // UPDATE VELOCITY
             pso_update_particle(pso_opts, pso_dyn, p_best, g_best, v_step, swarm);
@@ -292,73 +287,93 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
             g_hist.slice(t+1) = swarm;
 
 
-            // Only show progress if design_type = 2
-
-
+            // Record time 
             auto stop = std::chrono::high_resolution_clock::now();
             auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+            
 
-            if (verbose) Rcpp::Rcout << "Time taken by the iteration: " 
-                                    << duration.count() / 1000 << " seconds" << std::endl;
-            if (verbose) Rcpp::Rcout << std::endl;
+            // CHECK STOPPING CRITERION
+            if ((t + 1 > 0) & ((t + 1) % early_stopping == 0)) {
 
-                // CHECK STOPPING CRITERION
+                // Assign to struct
+                pso_result.g_best = g_best;
+                pso_result.coef_best = coef_best;
+                pso_result.distribution_best = distribution_best;
+                pso_result.fg_best = fg_best;
+                pso_result.fg_best_hist = fg_best_hist.subvec(0, t + 1);
+                pso_result.p_best = p_best;
+                pso_result.fp_best = fp_best;
+                pso_result.g_hist = g_hist.slices(0, t + 1);
+                pso_result.coef_best_hist = coef_best_hist.cols(0, t + 1);
+                pso_result.distribution_best_hist = distribution_best_hist.subvec(0, t + 1);
 
-                if ((t + 1 > 0) & ((t + 1) % early_stopping == 0)) {
+                // Check equivalence theorem
+                arma::mat model_set (t + 2, coef_best.n_elem + 1);
+                model_set.submat(0, 0, model_set.n_rows - 1, model_set.n_cols - 2) = coef_best_hist.cols(0, t + 1).t();
+                model_set.col(coef_best.n_elem) = distribution_best_hist.subvec(0, t + 1);
 
-                    // Assign to struct
-                    pso_result.g_best = g_best;
-                    pso_result.coef_best = coef_best;
-                    pso_result.distribution_best = distribution_best;
-                    pso_result.fg_best = fg_best;
-                    pso_result.fg_best_hist = fg_best_hist.subvec(0, t + 1);
-                    pso_result.p_best = p_best;
-                    pso_result.fp_best = fp_best;
-                    pso_result.g_hist = g_hist.slices(0, t + 1);
-                    pso_result.coef_best_hist = coef_best_hist.cols(0, t + 1);
-                    pso_result.distribution_best_hist = distribution_best_hist.subvec(0, t + 1);
+                model_set = unique_rows(model_set);
+                pso_result.model_set = model_set;
+                equivalence_plot_data(g_best, design_info_glob, pso_result);
 
-                    // Check equivalence theorem
-                    arma::mat model_set (t + 2, coef_best.n_elem + 1);
-                    model_set.submat(0, 0, model_set.n_rows - 1, model_set.n_cols - 2) = coef_best_hist.cols(0, t + 1).t();
-                    model_set.col(coef_best.n_elem) = distribution_best_hist.subvec(0, t + 1);
-
-                    model_set = unique_rows(model_set);
-                    pso_result.model_set = model_set;
-                    equivalence_plot_data(g_best, design_info_glob, pso_result);
-
-                    if(verbose) Rcpp::Rcout << "###### Max directional derivative: " << pso_result.max_dd << " ######" << std::endl;
-
-                    // If the design is optimal, stop
-                    if (abs(pso_result.max_dd - 1) < tol) {
-                        t = max_iter;
-                    }
+                // If the design is optimal, stop
+                if (abs(pso_result.max_dd - 1) < tol) {
+                    t = max_iter;
                 }
-
-
-                if (verbose) {
-                    Rcpp::Rcout << "Objective value: " << fg_best << std::endl;
-                    Rcpp::Rcout << "Levels:" << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t() << std::endl;
-                    Rcpp::Rcout << "Proportion:" << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t() << std::endl;
-                    Rcpp::Rcout << "Distribution: " << distribution_best << std::endl;
-                    Rcpp::Rcout << "Parameters:" << coef_best.t() << std::endl;
-
-                    Rcpp::Rcout << std::endl;
-                }
-
-                t++;
-                k++;
-
             }
+            
+                
+            // Print progress
+            if (verbose) {
+                
+                Rcpp::Rcout << "\nIteration " << t + 1 << "/" << max_iter 
+                            << " | Objective: " << fg_best
+                            << " | Time: " << duration.count() / 1000.0
+                            << " sec\n";
+                
+                Rcpp::Rcout << "  Levels:        " << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t();
+                Rcpp::Rcout << "  Proportions:   " << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t();
+                
+                Rcpp::Rcout << "  Parameters:    " << coef_best.t();
+                
+                std::string distribution_name =
+                    (distribution_best == 1) ? "Weibull" :
+                    (distribution_best == 2) ? "Log-normal" : "Unknown";
+                Rcpp::Rcout << "  Distribution:     " << distribution_name;
+                
+                // Only available when the equivalence theorem is checked
+                if ((t + 1) % early_stopping == 0) {
+                    Rcpp::Rcout << "\n  Max. dir. deriv.: " << pso_result.max_dd;
+                }
+                
+                Rcpp::Rcout << "\n";
+            
+            }
+            
+            
+            if (t == (max_iter - 1)) Rcpp::Rcout << std::endl;
+
+            t++;
+            k++;
+
+        }
 
         /* -- FINISH PSO LOOP -- */
     } catch (...) {
+        
         Rcpp::Rcout << "###### Interrupted by user ######" << std::endl;
-        Rcpp::Rcout << "Objective value: " << fg_best << std::endl;
-        Rcpp::Rcout << "Levels:" << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t() << std::endl;
-        Rcpp::Rcout << "Proportion:" << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t() << std::endl;
-        Rcpp::Rcout << "Distribution: " << distribution_best << std::endl;
-        Rcpp::Rcout << "Parameters:" << coef_best.t() << std::endl;
+        Rcpp::Rcout << "Objective:    " << fg_best << std::endl;
+        Rcpp::Rcout << "Levels:       " << g_best.subvec(0, design_info_glob.n_factor * design_info_glob.n_support - 1).t();
+        Rcpp::Rcout << "Proportion:   " << softmax(g_best.subvec(design_info_glob.n_factor * design_info_glob.n_support, g_best.n_elem - 1)).t();
+        Rcpp::Rcout << "Parameters:   " << coef_best.t();
+        
+        std::string distribution_name =
+            (distribution_best == 1) ? "Weibull" :
+            (distribution_best == 2) ? "Log-normal" : "Unknown";
+        Rcpp::Rcout << "  Distribution:     " << distribution_name << "\n";
+        
+        Rcpp::Rcout << "\n";
+        
     }
 
     /* -- OUTPUT -- */

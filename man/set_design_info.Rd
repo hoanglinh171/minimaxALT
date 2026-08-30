@@ -26,7 +26,8 @@ set_design_info(
 
 \item{censor_time}{Numeric. Test duration or censoring time.}
 
-\item{p}{Numeric. 0 < p < 1. Lifetime percentile to be estimated at the use condition, i.e. stress levels are 0.}
+\item{p}{Numeric. 0 < p < 1. Lifetime percentile to be estimated at the 
+use condition, i.e. stress levels are 0.}
 
 \item{use_cond}{Vector. Stress levels at the use condition.}
 
@@ -36,10 +37,13 @@ set_design_info(
 
 \item{x_h}{Numeric. Upper bound of stress range. Default is 1.}
 
-\item{reparam}{Logical. Whether reparameterization is applied to model parameters. Reparameterization is supported for all design types, while non-reparameterization is only available for locally optimal design \code{design_type = 1}. Default is TRUE.}
+\item{reparam}{Logical. Whether reparameterization is applied to model 
+parameters. Reparameterization is supported for all design types, while 
+non-reparameterization is only available for locally optimal design 
+\code{design_type = "locally"}. Default is TRUE.}
 }
 \value{
-A DesignInfo object of design specifications
+A `DesignInfo` object of design specifications
 }
 \description{
 Configures the settings for an accelerated life test.
