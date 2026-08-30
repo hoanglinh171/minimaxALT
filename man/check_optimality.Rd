@@ -7,29 +7,36 @@
 check_optimality(best_design, model_set, design_info, seed = 42)
 }
 \arguments{
-\item{best_design}{A matrix containing stress levels and allocated proportion of the design.}
+\item{best_design}{A matrix containing stress levels and allocated 
+proportion of the design, each row corresponds to stress levels of 
+each factor, while the last row is their proportions.}
 
-\item{model_set}{A matrix of models, including parameters and distribution, that maximize the optimality criteria with the given best particle's position.}
+\item{model_set}{A matrix of models, including parameters and distribution, 
+that maximize the optimality criteria with the given best particle's position, 
+each columns corresponds to model coefficients, while the last column 
+is lifetime distribution.}
 
-\item{design_info}{A list containing design parameters such as factor levels, number of units, and other settings.}
+\item{design_info}{A `DesignInfo` object created by 
+function \code{\link{set_design_info}}.}
 
 \item{seed}{Seed for reproducibility}
 }
 \value{
-An OptimalityCheck object
-\describe{
-\item{max_directional_derivative}{Maximum directional derivative within design space.}
-\item{model_set}{The model set that is input.}
-\item{model_weight}{The weight assigned to each model in the model set.}
-\item{equivalence_data}{Generated designs and their corresponding directional derivative given the optimal design \code{best_particle}. Each design is a combination of factors with value in [0, 1]. These designs are data for plotting equivalence theorem plot.}
-}
+An OptimalityCheck object containing optimality check results
 }
 \description{
 Evaluates whether a design is optimal by the equivalence theorem.
 }
 \examples{
-design_info <- set_design_info(k_levels=2, j_factor=1, n_unit=300, 
-                               censor_time=183, p=0.1, use_cond=0, sigma=0.6)
+design_info <- set_design_info(
+    k_levels=2, 
+    j_factor=1, 
+    n_unit=300, 
+    censor_time=183, 
+    p=0.1, 
+    use_cond=0, 
+    sigma=0.6
+)
                                
 best_design <- rbind(
   c(0.682, 1), 
@@ -37,12 +44,16 @@ best_design <- rbind(
 )
 
 model_set <- rbind(
-  c(0.01, 0.9, 1),
-  c(0.01, 0.99, 2))
+  c(0.01, 0.9, "weibull"),
+  c(0.01, 0.99, "lognormal")
+)
 
-equi <- check_optimality (best_design=best_design, 
-                          model_set=model_set, 
-                          design_info=design_info)
+equi <- check_optimality (
+    best_design = best_design, 
+    model_set = model_set, 
+    design_info = design_info
+)
+                          
 print(equi)                          
 
 }

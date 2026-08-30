@@ -1,3 +1,20 @@
+#' Summarize an OptimalALT Object
+#' 
+#' Provides a concise summary of the generated optimal accelerated life
+#' test (ALT) design and its optimality-check results. 
+#' 
+#' @param object An object of class \code{OptimalALT}, typically returned 
+#'  by \code{\link{find_optimal_alt}}. 
+#' @param ... Additional arguments.
+#'  
+#' @return Invisibly returns the original \code{OptimalALT} object.
+#' 
+#' @examples 
+#' \dontrun{
+#' result <- find_optimal_alt(...)
+#' summary(result)
+#' }
+#' 
 #' @export
 summary.OptimalALT <- function(object, ...) {
     stopifnot(inherits(object, "OptimalALT"))

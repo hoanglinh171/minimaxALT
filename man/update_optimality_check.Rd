@@ -2,7 +2,7 @@
 % Please edit documentation in R/check_optimality.R
 \name{update_optimality_check}
 \alias{update_optimality_check}
-\title{Update optimality check for an OptimalALT object}
+\title{Update Optimality Check for Optimal Design}
 \usage{
 update_optimality_check(design, check)
 }
@@ -16,4 +16,56 @@ An `OptimalityALT` object with updated optimality check information
 }
 \description{
 Update optimality check for an OptimalALT object
+}
+\examples{
+
+design_info <- set_design_info(
+    k_levels=3, 
+    j_factor=1, 
+    n_unit=300, 
+    censor_time=183, 
+    p=0.1, 
+    use_cond=0, 
+    sigma=0.6, 
+    x_l = 0.1, 
+    x_h = 1
+)
+
+pso_info <- pso_setting(
+    n_swarm=5, 
+    max_iter=10, 
+    early_stopping=5,
+    tol=0.0001
+)
+
+example1_lnorm_minimax <- find_optimal_alt(
+    design_type="minimax", 
+    distribution="lognormal",
+    design_info=design_info, 
+    pso_info=pso_info, 
+    coef_lower=c(10^-6, 0.7),
+    coef_upper=c(10^-4, 0.9), 
+    highest_level = TRUE,
+    verbose=TRUE, 
+    n_threads = 1)
+
+summary(example1_lnorm_minimax)
+
+opt_design <- extract_design(example1_lnorm_minimax)
+
+model_set <- rbind(
+    c(10^-6, 0.99, "lognormal"),
+    c(10^-4, 0.99, "lognormal")
+)
+
+equi <- check_optimality (
+    best_design=opt_design,
+    model_set=model_set, 
+    design_info=design_info
+)
+
+opt_check_update_design <- update_optimality_check(example1_lnorm_minimax, equi)
+
+summary(opt_check_update_design)
+
 }

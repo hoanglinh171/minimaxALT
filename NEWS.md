@@ -1,3 +1,7 @@
+# minimaxALT 1.0.4 (2025-08-31)
+
+* Update examples, error messages, and remove model-robust method
+
 # minimaxALT 1.0.3 (2025-12-23)
 
 * Update citation

@@ -1,0 +1,185 @@
+---
+title: "Optimal Design for Accelerated Life Testing"
+output: rmarkdown::html_vignette
+bibliography: reference.bib
+vignette: >
+  %\VignetteIndexEntry{Optimal Design for Accelerated Life Testing}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  message = FALSE,
+  warning = FALSE
+)
+
+library(minimaxALT)
+```
+
+# Introduction
+
+Accelerated life testing (ALT) is used to obtain information about
+product lifetime under normal operating conditions by testing units
+under more severe stress conditions. Optimal experimental design can be
+used to determine the stress levels and allocation proportions that
+provide the most efficient estimation of a lifetime characteristic. 
+This package provides methods to find locally C--optimal design and 
+minimax design use particle swarm optimization (PSO). The locally optimal 
+design is obtained when the model parameters are known, whereas the minimax 
+design is used when the model parameters are unknown. In the minimax approach, 
+the design is optimized under the worst-case parameter values, thus there are 
+two layers of optimization. The inner layer to find parameter values uses 
+Nelder--Mead algorithm, and the outer layer to find optimal design uses PSO. 
+See [@lee2025robust] for more details.
+
+This vignette demonstrates a complete workflow for generating and
+evaluating an optimal ALT design using this package.
+
+The workflow consists of the following steps:
+
+1. Specify the ALT design.
+2. Set the particle swarm optimization (PSO) hyperparameters.
+3. Specify initial values for the optimization.
+4. Generate the optimal ALT design.
+5. Check the optimality of the generated design.
+
+# 1. Specify the ALT design
+
+The first step is to determine the specifications of the design using
+\code{set_design_info()}. 
+
+```{r design-info}
+design_info <- set_design_info(
+    k_levels=2, 
+    j_factor=1, 
+    n_unit=300, 
+    censor_time=183, 
+    p=0.1, 
+    use_cond=0, 
+    sigma=0.6
+)
+
+print(design_info)
+```
+
+# 2. Set PSO hyperparameters
+
+The optimal design is obtained using particle swarm optimization (PSO).
+The PSO algorithm requires several hyperparameters, which can be
+specified using \code{pso_setting()}.
+
+```{r pso-info}
+pso_info <- pso_setting(
+  n_swarm = 10,
+  max_iter = 20,
+  early_stopping = 10,
+  tol = 0.0001,
+  c1 = 2.05,
+  c2 = 2.05,
+  w0 = 1.2,
+  w1 = 0.2,
+  w_var = 0.8,
+  vk = 4
+)
+
+print(pso_info)
+```
+
+# 3. Specify initial values
+
+In most applications, the default initialization is sufficient.
+User-specified initial values can be supplied when prior information
+about a suitable design or model parameters is available, using 
+\code{initialize_values()}. The initial values to be specified includes 
+particle positions for PSO and model parameters for multi--start Nelder--Mead in
+the case of minimax design. We create a swarm of 10 particles, and since the 
+design has one factor with two stress levels, the particle has three elements, 
+two of which are stress levels, and the other one is the weight of the first 
+stress level.
+
+```{r init-values}
+init_swarm <- matrix(runif(10 * 3, min = 0, max = 1), nrow = 10, ncol = 3)
+init_coef_mat <- rbind(
+    c(1.01*10^-6, 0.999),
+    c(9.99*10^-4, 0.999),
+    c(1.01*10^-6, 0.701),
+    c(9.99*10^-4, 0.701)
+)
+
+init_values <- initialize_values(
+    init_swarm=init_swarm,
+    init_coef_mat=init_coef_mat
+)
+
+print(init_values)
+```
+
+# 4. Generate the optimal ALT design
+
+After specifying the design information, PSO settings, and initial
+values, an optimal ALT design can be generated using
+\code{minimax_alt()}.
+
+In this example, we consider a locally optimal design with a Log-normal
+failure-time distribution.
+
+```{r minimax-alt}
+optimal_design <- find_optimal_alt(
+    design_type="locally", 
+    distribution="lognormal", 
+    design_info=design_info, 
+    pso_info=pso_info,
+    coef = c(0.001, 0.9),
+    highest_level = TRUE,
+    verbose = FALSE
+)
+
+print(optimal_design)
+```
+
+For demonstration purposes, the following sections assume that the
+optimization has been successfully completed and the resulting object is
+stored in \code{optimal_design}.
+
+# 5. Examine the optimization results
+
+The resulting object is of class \code{OptimalALT} and contains the
+optimal design together with information from the optimization and
+optimality check.
+
+The object can be inspected using:
+
+```{r minimax-alt-summary}
+summary(optimal_design)
+```
+
+The summary displays the stress levels and their corresponding
+allocation proportions:
+
+$$
+X = \text{stress levels}, \qquad
+W = \text{corresponding allocation proportions}.
+$$
+
+The objective value and maximum directional derivative are also
+reported. The optimality check can be visualized using the \code{plot()} for
+\code{OptimalALT} objects.
+
+```{r optimal-alt-plot}
+plot(optimal_design)
+```
+
+# Conclusion
+
+The same workflow can be extended to other failure-time
+distributions, stress ranges, and optimization settings supported by the
+package.
+
+# References
+
