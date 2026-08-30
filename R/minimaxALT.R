@@ -87,6 +87,7 @@ find_optimal_alt <- function(design_type, distribution,
     
     ## seed
     seed <- round(seed, digits = 0)
+    set.seed(seed)
     
     
     ## coef bounds for locally optimal design
@@ -129,11 +130,8 @@ find_optimal_alt <- function(design_type, distribution,
     init_coef_mat <- NULL
     
     if(!is.null(coef)) {
-        
         init_coef <- coef
-        
     } else {
-        
         init_coef <- runif(n_factor + 1, min = -40, max = 40)
     }
     
@@ -155,9 +153,7 @@ find_optimal_alt <- function(design_type, distribution,
     } 
 
     if(is.null(init_local)) {
-        
         init_local <- c(1, 0.6, 0.3)
-        
     }
     
     if(is.null(init_coef_mat)) {
