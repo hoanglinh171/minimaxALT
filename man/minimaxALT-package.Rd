@@ -6,7 +6,7 @@
 \alias{minimaxALT-package}
 \title{minimaxALT: Generate Optimal Designs of Accelerated Life Test using PSO-Based Algorithm}
 \description{
-A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT). Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles. For more detailed, see Lee et al. (2025), Optimal Robust Strategies for Accelerated Life Tests and Fatigue Testing of Polymer Composite Materials \url{https://doi.org/10.1214/25-AOAS2075}.
+A computationally efficient solution for generating optimal experimental designs in Accelerated Life Testing (ALT). Leveraging a Particle Swarm Optimization (PSO)-based hybrid algorithm, the package identifies optimal test plans that minimize estimation variance under specified failure models and stress profiles. For more detailed, see Lee et al. (2025), Optimal Robust Strategies for Accelerated Life Tests and Fatigue Testing of Polymer Composite Materials \doi{10.1214/25-AOAS2075}.
 }
 \seealso{
 Useful links:

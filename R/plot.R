@@ -56,6 +56,8 @@ plot.OptimalALT <- function(x, x_l = 0, x_h = 1, nlevels = 10, ...) {
 
 ## plot.OptimalALT() helper functions ------------------------------------------
 
+utils::globalVariables(c("stress_level", "dir_deriv"))
+
 plot_one_factor <- function(equivalence_data, proportion, x_l, x_h) {
     equi <- as.data.frame(equivalence_data)
     
