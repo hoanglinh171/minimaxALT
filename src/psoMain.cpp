@@ -207,7 +207,7 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
     pso_dyn pso_dyn;
 
 
-    Rcpp::Rcout << "PSO Loop: Initializing..    " << std::endl;
+    if (verbose) Rcpp::Rcout << "PSO Loop: Initializing..    " << std::endl;
 
     // INITIALIZE RANDOM SWARM
     swarm = pso_opts.init_swarm;
@@ -238,8 +238,7 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
     g_hist.slice(0) = swarm;
     distribution_best_hist(0) = distribution_best;
 
-    Rcpp::Rcout << "OK" << std::endl;
-    Rcpp::Rcout << std::endl;
+    if(verbose) Rcpp::Rcout << "OK" << std::endl;
     
 
     /* -- START PSO LOOP -- */
@@ -253,7 +252,7 @@ void pso_main(int design_type, pso_options &pso_opts, inner_optimization &inner_
 
             auto start = std::chrono::high_resolution_clock::now();
 
-            if (t == 0)  Rcpp::Rcout << "PSO Loop: Updating ... " << std::endl;
+            if (verbose && (t == 0))  Rcpp::Rcout << "PSO Loop: Updating ... " << std::endl;
 
             // UPDATE VELOCITY
             pso_update_particle(pso_opts, pso_dyn, p_best, g_best, v_step, swarm);

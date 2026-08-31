@@ -9,5 +9,4 @@
 library(testthat)
 library(minimaxALT)
 
-set.seed(42)
 test_check("minimaxALT")
